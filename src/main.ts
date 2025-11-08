@@ -55,15 +55,21 @@ async function start(): Promise<void> {
     port?: number;
   }>();
 
-  // Set environment variables from input
-  if (input?.spotifyClientId) {
-    process.env.SPOTIFY_CLIENT_ID = input.spotifyClientId;
+  // In Standby mode, Apify sets environment variables directly from task input
+  // Prefer environment variables if they exist, otherwise use input
+  const clientId = process.env.SPOTIFY_CLIENT_ID || input?.spotifyClientId;
+  const clientSecret = process.env.SPOTIFY_CLIENT_SECRET || input?.spotifyClientSecret;
+  const refreshToken = process.env.SPOTIFY_REFRESH_TOKEN || input?.spotifyRefreshToken;
+  
+  // Set environment variables for the application
+  if (clientId) {
+    process.env.SPOTIFY_CLIENT_ID = clientId;
   }
-  if (input?.spotifyClientSecret) {
-    process.env.SPOTIFY_CLIENT_SECRET = input.spotifyClientSecret;
+  if (clientSecret) {
+    process.env.SPOTIFY_CLIENT_SECRET = clientSecret;
   }
-  if (input?.spotifyRefreshToken) {
-    process.env.SPOTIFY_REFRESH_TOKEN = input.spotifyRefreshToken;
+  if (refreshToken) {
+    process.env.SPOTIFY_REFRESH_TOKEN = refreshToken;
   }
   if (input?.enableNLP !== undefined) {
     process.env.ENABLE_NLP = String(input.enableNLP);
@@ -72,12 +78,13 @@ async function start(): Promise<void> {
     process.env.PORT = String(input.port);
   }
 
-  log.info("Apify Actor initialized with input", {
-    hasClientId: !!input?.spotifyClientId,
-    hasClientSecret: !!input?.spotifyClientSecret,
-    hasRefreshToken: !!input?.spotifyRefreshToken,
+  log.info("Apify Actor initialized", {
+    hasClientId: !!clientId,
+    hasClientSecret: !!clientSecret,
+    hasRefreshToken: !!refreshToken,
     enableNLP: input?.enableNLP ?? true,
     port: input?.port ?? 3001,
+    source: process.env.SPOTIFY_CLIENT_ID ? 'env' : 'input',
   });
 
   const app = express();
