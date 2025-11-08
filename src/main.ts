@@ -45,6 +45,41 @@ function validateMCPRequest(body: any): { valid: boolean; error?: string } {
  * Initialize and start the MCP server
  */
 async function start(): Promise<void> {
+  // Initialize Apify and get input
+  await Actor.init();
+  const input = await Actor.getInput<{
+    spotifyClientId?: string;
+    spotifyClientSecret?: string;
+    spotifyRefreshToken?: string;
+    enableNLP?: boolean;
+    port?: number;
+  }>();
+
+  // Set environment variables from input
+  if (input?.spotifyClientId) {
+    process.env.SPOTIFY_CLIENT_ID = input.spotifyClientId;
+  }
+  if (input?.spotifyClientSecret) {
+    process.env.SPOTIFY_CLIENT_SECRET = input.spotifyClientSecret;
+  }
+  if (input?.spotifyRefreshToken) {
+    process.env.SPOTIFY_REFRESH_TOKEN = input.spotifyRefreshToken;
+  }
+  if (input?.enableNLP !== undefined) {
+    process.env.ENABLE_NLP = String(input.enableNLP);
+  }
+  if (input?.port) {
+    process.env.PORT = String(input.port);
+  }
+
+  log.info("Apify Actor initialized with input", {
+    hasClientId: !!input?.spotifyClientId,
+    hasClientSecret: !!input?.spotifyClientSecret,
+    hasRefreshToken: !!input?.spotifyRefreshToken,
+    enableNLP: input?.enableNLP ?? true,
+    port: input?.port ?? 3001,
+  });
+
   const app = express();
 
   // Middleware
