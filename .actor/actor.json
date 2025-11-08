@@ -1,7 +1,7 @@
 {
+  "actorSpecification": 1,
   "name": "wealthy_rhinoceros/playlistify-ai",
   "version": "0.1.0",
   "buildTag": "latest",
-  "env": null,
   "dockerfile": "./Dockerfile"
 }
