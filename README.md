@@ -1,26 +1,50 @@
-Playlistify# 🎵 Playlistify AI# Apify Spotify MCP Actor
+PlaylistifyPlaylistify# 🎵 Playlistify AI# Apify Spotify MCP Actor
 
-AI-powered Spotify playlist creator.**AI-powered Spotify playlist creator with natural language understanding**A production-ready Model Context Protocol (MCP) server for Spotify, deployable on the Apify platform. This Actor exposes an HTTP endpoint that AI clients can use to search tracks, get recommendations, and create playlists via natural language.
 
-FeaturesCreate unique, personalized Spotify playlists using natural language descriptions. Powered by Apify Actor platform and Spotify Web API.## 🎯 Features
 
-- Search Spotify tracks---- **MCP-Compatible HTTP Server** - Exposes `/mcp` endpoint for AI tool calls
+AI-powered Spotify playlist creatorAI-powered Spotify playlist creator.**AI-powered Spotify playlist creator with natural language understanding**A production-ready Model Context Protocol (MCP) server for Spotify, deployable on the Apify platform. This Actor exposes an HTTP endpoint that AI clients can use to search tracks, get recommendations, and create playlists via natural language.
 
-- Get AI recommendations
 
-- Create playlists with natural language- **Three Core Tools**:
 
-- Fast caching and rate limiting
+FeaturesFeaturesCreate unique, personalized Spotify playlists using natural language descriptions. Powered by Apify Actor platform and Spotify Web API.## 🎯 Features
+
+- Search tracks
+
+- Get recommendations  - Search Spotify tracks---- **MCP-Compatible HTTP Server** - Exposes `/mcp` endpoint for AI tool calls
+
+- Create playlists
+
+- Natural language support- Get AI recommendations
+
+
+
+Setup- Create playlists with natural language- **Three Core Tools**:
+
+1. Get credentials from https://developer.spotify.com/dashboard
+
+2. Add to Apify input- Fast caching and rate limiting
+
+3. Run
 
 ## ✨ Features - `search-track` - Search Spotify catalog by keyword
 
-Setup
+API
 
-- `recommend` - Get personalized recommendations using seeds
+POST /mcp - Main endpointSetup
 
-1. Get Spotify credentials from https://developer.spotify.com/dashboard
+GET /health - Status
 
-2. Add Client ID, Client Secret, and Refresh Token to Apify input- **🔍 Smart Search**: Search Spotify's catalog with intelligent filtering - `create-playlist` - Create playlists and add tracks
+GET /stats - Statistics- `recommend` - Get personalized recommendations using seeds
+
+
+
+Usage1. Get Spotify credentials from https://developer.spotify.com/dashboard
+
+Search: {"tool":"search-track","input":{"query":"happy"}}
+
+Recommend: {"tool":"recommend","input":{"seedGenres":["pop"]}}2. Add Client ID, Client Secret, and Refresh Token to Apify input- **🔍 Smart Search**: Search Spotify's catalog with intelligent filtering - `create-playlist` - Create playlists and add tracks
+
+Create: {"tool":"create-playlist","input":{"name":"My Playlist","trackUris":[]}}
 
 3. Run the Actor
 
