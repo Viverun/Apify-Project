@@ -1,7 +1,0 @@
-{
-  "spotifyClientId": "e7b084553d51471fbc32cb2e8a90936d",
-  "spotifyClientSecret": "5db1a269182b45c5ba59406192bfa704",
-  "spotifyRefreshToken": "AQDJ1d_74Td9rg8aiCadUkl6EJm1E9ewEk58ALOzBHRSrbZsOrnDnfr3lCxYkWg33XDjo2Y2HNGbR2p6O0XFseCDrW5KER6A1sOv4rCZYEHZ4NisDsnCYshwcVEmO2ITQDs",
-  "enableNLP": true,
-  "port": 3001
-}

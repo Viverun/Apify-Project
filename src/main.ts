@@ -96,22 +96,31 @@ async function start(): Promise<void> {
 
   // Middleware
   app.use(bodyParser.json({ limit: "10mb" }));
-  app.use((req, res, next) => {
-    res.setHeader("Content-Type", "application/json");
-    next();
-  });
 
-  // Health check endpoint
-  app.get("/", (_req: Request, res: Response) => {
+  // Serve static landing page
+  app.use(express.static("public"));
+
+  // API endpoint - return JSON for /api or accept header
+  app.get("/api", (_req: Request, res: Response) => {
     res.json({
       status: "healthy",
-      service: "Apify Spotify MCP Actor",
+      service: "Playlistify AI",
       version: "0.1.0",
       endpoints: {
         mcp: "/mcp",
-        health: "/",
+        health: "/api",
         stats: "/stats",
+        landing: "/",
       },
+    });
+  });
+
+  // Health check endpoint (for backwards compatibility and health checks)
+  app.get("/health", (_req: Request, res: Response) => {
+    res.json({
+      status: "healthy",
+      service: "Playlistify AI",
+      version: "0.1.0",
     });
   });
 

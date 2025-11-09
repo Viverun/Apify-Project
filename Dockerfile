@@ -14,8 +14,9 @@ COPY tsconfig.json ./
 # Install ALL dependencies (including devDependencies for build)
 RUN npm ci && npm cache clean --force
 
-# Copy source code
+# Copy source code and public assets
 COPY src ./src
+COPY public ./public
 
 # Build TypeScript
 RUN npm run build
