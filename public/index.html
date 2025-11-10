@@ -3,7 +3,17 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Playlistify</title>
+    <!-- Meta refresh as fallback if JavaScript is disabled -->
+    <meta http-equiv="refresh" content="0; url=/create-playlist.html" />
+    <title>Playlistify - Redirecting...</title>
+    <script>
+      // Automatically redirect to create-playlist.html while preserving query parameters
+      (function() {
+        const currentUrl = new URL(window.location.href);
+        const queryParams = currentUrl.search; // Preserves ?token=... and any other params
+        window.location.href = '/create-playlist.html' + queryParams;
+      })();
+    </script>
     <style>
       * {
         margin: 0;
@@ -234,13 +244,13 @@
     <div class="container">
       <header>
         <div class="logo">Playlistify</div>
-        <div class="tagline">AI-powered Spotify playlist creator</div>
+        <div class="tagline">Redirecting to Create Playlist...</div>
       </header>
 
       <div class="status-card">
         <div class="status-indicator">
           <div class="status-dot loading" id="statusDot"></div>
-          <h2 id="statusText">Checking Server Status...</h2>
+          <h2 id="statusText">Loading Playlistify AI...</h2>
         </div>
 
         <div class="stats" id="statsContainer" style="display: none">

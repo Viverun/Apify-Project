@@ -1,1 +1,22 @@
-{"actorSpecification":1,"name":"jubilant_pheasant/playlistify-ai","title":"Playlistify","description":"AI-powered Spotify playlist creator.","version":"0.1.0","buildTag":"latest","dockerfile":"./Dockerfile"}
+{
+  "actorSpecification": 1,
+  "name": "jubilant_pheasant/playlistify-ai",
+  "title": "Playlistify",
+  "description": "AI-powered Spotify playlist creator.",
+  "version": "0.1.0",
+  "buildTag": "latest",
+  "dockerfile": "./Dockerfile",
+  "storages": {
+    "dataset": {
+      "actorSpecification": 1,
+      "views": {
+        "overview": {
+          "title": "Overview",
+          "transformation": {
+            "fields": ["playlistId", "name", "trackCount", "createdAt"]
+          }
+        }
+      }
+    }
+  }
+}
