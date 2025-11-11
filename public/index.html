@@ -1,1961 +1,737 @@
-<!DOCTYPE html><!DOCTYPE html>
-
-<html lang="en"><html lang="en">
-
-  <head>  <head>
-
-    <meta charset="UTF-8" />    <meta charset="UTF-8" />
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <title>Playlistify AI - AI-Powered Spotify Playlist Creator</title>    <title>Playlistify AI - AI-Powered Spotify Playlist Creator</title>
-
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
-    <style>    <style>
-
-      :root {      :root {
-
-        --spotify-green: #1DB954;        --spotify-green: #1DB954;
-
-        --primary-dark: #0F0F23;        --primary-dark: #0F0F23;
-
-        --secondary-dark: #1A1A2E;        --secondary-dark: #1A1A2E;
-
-        --card-bg: #16213E;        --card-bg: #16213E;
-
-        --text-primary: #FFFFFF;        --text-primary: #FFFFFF;
-
-        --text-secondary: #94A3B8;        --text-secondary: #94A3B8;
-
-        --accent-blue: #3B82F6;        --accent-blue: #3B82F6;
-
-        --accent-purple: #8B5CF6;        --accent-purple: #8B5CF6;
-
-        --accent-pink: #EC4899;        --accent-pink: #EC4899;
-
-      }        --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
-
-        --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.2);
-
-      * {        --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.3);
-
-        margin: 0;        --radius-sm: 8px;
-
-        padding: 0;        --radius-md: 12px;
-
-        box-sizing: border-box;        --radius-lg: 20px;
-
-      }      }
-
-
-
-      html {      * {
-
-        scroll-behavior: smooth;        margin: 0;
-
-      }        padding: 0;
-
-        box-sizing: border-box;
-
-      body {      }
-
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-
-        background: var(--primary-dark);      html {
-
-        min-height: 100vh;        scroll-behavior: smooth;
-
-        color: var(--text-primary);      }
-
-        line-height: 1.6;
-
-        overflow-x: hidden;      body {
-
-      }        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-
-        background: var(--primary-dark);
-
-      /* Animated Gradient Background */        min-height: 100vh;
-
-      .gradient-bg {        color: var(--text-primary);
-
-        position: fixed;        line-height: 1.6;
-
-        top: 0;        overflow-x: hidden;
-
-        left: 0;        position: relative;
-
-        width: 100%;      }
-
-        height: 100%;
-
-        z-index: -1;      /* Animated Gradient Background */
-
-        background: linear-gradient(45deg, #0F0F23, #1A1A2E, #16213E, #0F0F23);      .gradient-bg {
-
-        background-size: 400% 400%;        position: fixed;
-
-        animation: gradientShift 15s ease infinite;        top: 0;
-
-      }        left: 0;
-
-        width: 100%;
-
-      .gradient-bg::before {        height: 100%;
-
-        content: '';        z-index: -1;
-
-        position: absolute;        background: linear-gradient(45deg, #0F0F23, #1A1A2E, #16213E);
-
-        top: -50%;        background-size: 400% 400%;
-
-        left: -50%;        animation: gradientShift 15s ease infinite;
-
-        width: 200%;      }
-
-        height: 200%;
-
-        background:       .gradient-bg::before {
-
-          radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),        content: '';
-
-          radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),        position: absolute;
-
-          radial-gradient(circle at 40% 80%, rgba(236, 72, 153, 0.15) 0%, transparent 50%);        top: -50%;
-
-        animation: float 20s ease-in-out infinite;        left: -50%;
-
-      }        width: 200%;
-
-        height: 200%;
-
-      @keyframes gradientShift {        background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
-
-        0%, 100% { background-position: 0% 50%; }                    radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
-
-        50% { background-position: 100% 50%; }                    radial-gradient(circle, rgba(236, 72, 153, 0.1) 0%, transparent 50%);
-
-      }        animation: float 20s ease-in-out infinite;
-
-      }
-
-      @keyframes float {
-
-        0%, 100% { transform: translate(0, 0) rotate(0deg); }      @keyframes gradientShift {
-
-        33% { transform: translate(30px, -30px) rotate(120deg); }        0%, 100% { background-position: 0% 50%; }
-
-        66% { transform: translate(-20px, 20px) rotate(240deg); }        50% { background-position: 100% 50%; }
-
-      }      }
-
-
-
-      /* Navbar */      @keyframes float {
-
-      nav {        0%, 100% { transform: translate(0, 0) rotate(0deg); }
-
-        position: fixed;        33% { transform: translate(30px, -30px) rotate(120deg); }
-
-        top: 0;        66% { transform: translate(-20px, 20px) rotate(240deg); }
-
-        left: 0;      }
-
-        right: 0;
-
-        background: rgba(15, 15, 35, 0.9);      /* Navbar */
-
-        backdrop-filter: blur(20px);      nav {
-
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);        position: fixed;
-
-        padding: 1rem 0;        top: 0;
-
-        z-index: 1000;        left: 0;
-
-      }        right: 0;
-
-        background: rgba(15, 15, 35, 0.8);
-
-      .nav-container {        backdrop-filter: blur(20px);
-
-        max-width: 1400px;        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-
-        margin: 0 auto;        padding: 1rem 0;
-
-        padding: 0 2rem;        z-index: 1000;
-
-        display: flex;        animation: slideDown 0.5s ease-out;
-
-        justify-content: space-between;      }
-
-        align-items: center;
-
-      }      @keyframes slideDown {
-
-        from {
-
-      .nav-logo {          transform: translateY(-100%);
-
-        display: flex;          opacity: 0;
-
-        align-items: center;        }
-
-        gap: 12px;        to {
-
-        font-size: 1.5rem;          transform: translateY(0);
-
-        font-weight: 700;          opacity: 1;
-
-        color: var(--text-primary);        }
-
-        text-decoration: none;      }
-
-      }
-
-      .nav-container {
-
-      .logo-icon {        max-width: 1400px;
-
-        width: 40px;        margin: 0 auto;
-
-        height: 40px;        padding: 0 2rem;
-
-        background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));        display: flex;
-
-        border-radius: 10px;        justify-content: space-between;
-
-        display: flex;        align-items: center;
-
-        align-items: center;      }
-
-        justify-content: center;
-
-        font-size: 1.5rem;      .nav-logo {
-
-      }        display: flex;
-
-        align-items: center;
-
-      .nav-links {        gap: 12px;
-
-        display: flex;        font-size: 1.5rem;
-
-        gap: 2rem;        font-weight: 700;
-
-        list-style: none;        color: var(--text-primary);
-
-        align-items: center;        text-decoration: none;
-
-      }      }
-
-
-
-      .nav-links a {      .logo-icon {
-
-        color: var(--text-secondary);        width: 40px;
-
-        text-decoration: none;        height: 40px;
-
-        font-weight: 500;        background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
-
-        transition: all 0.3s ease;        border-radius: 10px;
-
-        cursor: pointer;        display: flex;
-
-      }        align-items: center;
-
-        justify-content: center;
-
-      .nav-links a:hover {        font-size: 1.5rem;
-
-        color: var(--text-primary);      }
-
-      }
-
-      .nav-links {
-
-      .setup-btn {        display: flex;
-
-        background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));        gap: 2rem;
-
-        color: white;        list-style: none;
-
-        padding: 0.6rem 1.5rem;        align-items: center;
-
-        border-radius: 8px;      }
-
-        border: none;
-
-        font-weight: 600;      .nav-links a {
-
-        cursor: pointer;        color: var(--text-secondary);
-
-        transition: all 0.3s ease;        text-decoration: none;
-
-      }        font-weight: 500;
-
-        transition: color 0.3s ease;
-
-      .setup-btn:hover {        position: relative;
-
-        transform: translateY(-2px);      }
-
-        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
-
-      }      .nav-links a::after {
-
-        content: '';
-
-      .container {        position: absolute;
-
-        max-width: 1400px;        bottom: -5px;
-
-        margin: 0 auto;        left: 0;
-
-        padding: 0 2rem;        width: 0;
-
-      }        height: 2px;
-
-        background: linear-gradient(90deg, var(--accent-blue), var(--accent-purple));
-
-      /* Hero Section */        transition: width 0.3s ease;
-
-      header {      }
-
-        text-align: center;
-
-        padding: 140px 20px 80px;      .nav-links a:hover {
-
-      }        color: var(--text-primary);
-
-      }
-
-      .logo-text {
-
-        font-size: 4.5rem;      .nav-links a:hover::after {
-
-        font-weight: 800;        width: 100%;
-
-        margin-bottom: 20px;      }
-
-        background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
-
-        -webkit-background-clip: text;      .setup-btn {
-
-        -webkit-text-fill-color: transparent;        background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
-
-        background-clip: text;        color: white;
-
-        letter-spacing: -2px;        padding: 0.6rem 1.5rem;
-
-      }        border-radius: var(--radius-sm);
-
-        border: none;
-
-      .tagline {        font-weight: 600;
-
-        font-size: 1.5rem;        cursor: pointer;
-
-        color: var(--text-secondary);        transition: all 0.3s ease;
-
-        font-weight: 400;        text-decoration: none;
-
-        max-width: 700px;        display: inline-block;
-
-        margin: 0 auto 40px;      }
-
-      }
-
-      .setup-btn:hover {
-
-      .cta-buttons {        transform: translateY(-2px);
-
-        display: flex;        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
-
-        gap: 1rem;      }
-
-        justify-content: center;
-
-        flex-wrap: wrap;      /* Mobile Menu Toggle */
-
-      }      .menu-toggle {
-
-        display: none;
-
-      .btn-primary, .btn-secondary {        flex-direction: column;
-
-        padding: 1rem 2.5rem;        gap: 4px;
-
-        border-radius: 12px;        cursor: pointer;
-
-        font-weight: 600;      }
-
-        font-size: 1.1rem;
-
-        cursor: pointer;      .menu-toggle span {
-
-        transition: all 0.3s ease;        width: 25px;
-
-        text-decoration: none;        height: 3px;
-
-        border: none;        background: var(--text-primary);
-
-      }        border-radius: 2px;
-
-        transition: all 0.3s ease;
-
-      .btn-primary {      }
-
-        background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
-
-        color: white;      .container {
-
-      }        max-width: 1400px;
-
-        margin: 0 auto;
-
-      .btn-primary:hover {        padding: 0 2rem;
-
-        transform: translateY(-3px);      }
-
-        box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
-
-      }      /* Header Styles */
-
-      header {
-
-      .btn-secondary {        text-align: center;
-
-        background: rgba(255, 255, 255, 0.05);        padding: 140px 20px 80px;
-
-        color: white;        animation: fadeInUp 0.8s ease-out;
-
-        border: 1px solid rgba(255, 255, 255, 0.2);      }
-
-      }
-
-      @keyframes fadeInUp {
-
-      .btn-secondary:hover {        from {
-
-        background: rgba(255, 255, 255, 0.1);          opacity: 0;
-
-        border-color: rgba(255, 255, 255, 0.4);          transform: translateY(30px);
-
-      }        }
-
-        to {
-
-      /* Cards */          opacity: 1;
-
-      .card {          transform: translateY(0);
-
-        background: var(--card-bg);        }
-
-        border-radius: 20px;      }
-
-        padding: 40px;
-
-        margin: 40px 0;      .logo {
-
-        border: 1px solid rgba(255, 255, 255, 0.05);        font-size: 4.5rem;
-
-        transition: all 0.3s ease;        font-weight: 800;
-
-      }        margin-bottom: 20px;
-
-        background: linear-gradient(135deg, var(--text-primary), var(--text-secondary));
-
-      .card:hover {        -webkit-background-clip: text;
-
-        border-color: rgba(59, 130, 246, 0.3);        -webkit-text-fill-color: transparent;
-
-        box-shadow: 0 12px 40px rgba(59, 130, 246, 0.15);        background-clip: text;
-
-      }        letter-spacing: -2px;
-
-      }
-
-      .section-title {
-
-        font-size: 2.5rem;      .tagline {
-
-        font-weight: 700;        font-size: 1.5rem;
-
-        margin-bottom: 20px;        color: var(--text-secondary);
-
-        text-align: center;        font-weight: 400;
-
-      }        letter-spacing: 0.5px;
-
-        max-width: 700px;
-
-      .section-subtitle {        margin: 0 auto 40px;
-
-        font-size: 1.1rem;      }
-
-        color: var(--text-secondary);
-
-        text-align: center;      .cta-buttons {
-
-        max-width: 700px;        display: flex;
-
-        margin: 0 auto 50px;        gap: 1rem;
-
-      }        justify-content: center;
-
-        flex-wrap: wrap;
-
-      /* Features Grid */      }
-
-      .features-grid {
-
-        display: grid;      .btn-primary {
-
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));        background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
-
-        gap: 30px;        color: white;
-
-        margin: 60px 0;        padding: 1rem 2.5rem;
-
-      }        border-radius: var(--radius-md);
-
-        border: none;
-
-      .feature-card {        font-weight: 600;
-
-        background: var(--card-bg);        font-size: 1.1rem;
-
-        border-radius: 16px;        cursor: pointer;
-
-        padding: 40px 30px;        transition: all 0.3s ease;
-
-        border: 1px solid rgba(255, 255, 255, 0.05);        text-decoration: none;
-
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);        display: inline-block;
-
-        text-align: center;      }
-
-      }
-
-      .btn-primary:hover {
-
-      .feature-card:hover {        transform: translateY(-3px);
-
-        transform: translateY(-8px);        box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
-
-        border-color: rgba(59, 130, 246, 0.3);      }
-
-        box-shadow: 0 12px 40px rgba(59, 130, 246, 0.2);
-
-      }      .btn-secondary {
-
-        background: rgba(255, 255, 255, 0.05);
-
-      .feature-icon {        color: white;
-
-        font-size: 3.5rem;        padding: 1rem 2.5rem;
-
-        margin-bottom: 20px;        border-radius: var(--radius-md);
-
-        display: inline-block;        border: 1px solid rgba(255, 255, 255, 0.2);
-
-      }        font-weight: 600;
-
-        font-size: 1.1rem;
-
-      .feature-title {        cursor: pointer;
-
-        font-size: 1.4rem;        transition: all 0.3s ease;
-
-        margin-bottom: 15px;        text-decoration: none;
-
-        font-weight: 600;        display: inline-block;
-
-      }      }
-
-
-
-      .feature-desc {      .btn-secondary:hover {
-
-        color: var(--text-secondary);        background: rgba(255, 255, 255, 0.1);
-
-        line-height: 1.8;        border-color: rgba(255, 255, 255, 0.4);
-
-      }        transform: translateY(-3px);
-
-      }
-
-      /* Setup Section */
-
-      .setup-section {      /* Status Card */
-
-        background: var(--card-bg);      .status-card {
-
-        border-radius: 20px;        background: var(--card-bg);
-
-        padding: 50px;        border-radius: var(--radius-lg);
-
-        margin: 60px 0;        padding: 48px;
-
-        border: 1px solid rgba(255, 255, 255, 0.05);        margin: 48px 0;
-
-      }        box-shadow: var(--shadow-lg);
-
-        border: 1px solid rgba(255, 255, 255, 0.05);
-
-      .setup-steps {        animation: fadeInUp 0.8s ease-out 0.2s both;
-
-        display: grid;      }
-
-        gap: 30px;
-
-        margin-top: 40px;      @keyframes fadeInUp {
-
-      }        from {
-
-          opacity: 0;
-
-      .step {          transform: translateY(30px);
-
-        display: flex;        }
-
-        gap: 20px;        to {
-
-        align-items: start;          opacity: 1;
-
-      }          transform: translateY(0);
-
-        }
-
-      .step-number {      }
-
-        min-width: 50px;
-
-        height: 50px;      .status-indicator {
-
-        background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));        display: flex;
-
-        border-radius: 50%;        align-items: center;
-
-        display: flex;        justify-content: center;
-
-        align-items: center;        gap: 16px;
-
-        justify-content: center;        margin-bottom: 40px;
-
-        font-size: 1.5rem;      }
-
-        font-weight: 700;
-
-      }      .status-dot {
-
-        width: 12px;
-
-      .step-content h3 {        height: 12px;
-
-        font-size: 1.3rem;        border-radius: 50%;
-
-        margin-bottom: 10px;        position: relative;
-
-      }      }
-
-
-
-      .step-content p {      .status-dot::before {
-
-        color: var(--text-secondary);        content: '';
-
-        line-height: 1.7;        position: absolute;
-
-      }        width: 100%;
-
-        height: 100%;
-
-      .step-content code {        border-radius: 50%;
-
-        background: rgba(0, 0, 0, 0.3);        animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
-
-        padding: 2px 8px;      }
-
-        border-radius: 4px;
-
-        font-family: monospace;      @keyframes ping {
-
-        color: var(--accent-blue);        75%, 100% {
-
-      }          transform: scale(2);
-
-          opacity: 0;
-
-      /* Form Section */        }
-
-      .config-form {      }
-
-        background: var(--card-bg);
-
-        border-radius: 20px;      .status-dot.loading {
-
-        padding: 50px;        background: #FFA500;
-
-        margin: 60px 0;      }
-
-        border: 1px solid rgba(255, 255, 255, 0.05);
-
-      }      .status-dot.loading::before {
-
-        background: #FFA500;
-
-      .form-group {      }
-
-        margin-bottom: 25px;
-
-      }      .status-dot.online {
-
-        background: var(--spotify-green);
-
-      .form-group label {      }
-
-        display: block;
-
-        margin-bottom: 10px;      .status-dot.online::before {
-
-        font-weight: 600;        background: var(--spotify-green);
-
-        color: var(--text-primary);      }
-
-      }
-
-      .status-dot.offline {
-
-      .form-group input,        background: #EF4444;
-
-      .form-group textarea {      }
-
-        width: 100%;
-
-        background: rgba(0, 0, 0, 0.3);      .status-dot.offline::before {
-
-        border: 1px solid rgba(255, 255, 255, 0.1);        background: #EF4444;
-
-        border-radius: 8px;      }
-
-        padding: 12px 16px;
-
-        color: var(--text-primary);      #statusText {
-
-        font-family: 'Inter', sans-serif;        font-size: 1.125rem;
-
-        font-size: 1rem;        font-weight: 500;
-
-        transition: all 0.3s ease;        letter-spacing: 0.3px;
-
-      }      }
-
-
-
-      .form-group input:focus,      /* Stats */
-
-      .form-group textarea:focus {      .stats {
-
-        outline: none;        display: grid;
-
-        border-color: var(--accent-blue);        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);        gap: 32px;
-
-      }        margin: 32px 0;
-
-      }
-
-      .form-help {
-
-        font-size: 0.9rem;      .stat {
-
-        color: var(--text-secondary);        text-align: center;
-
-        margin-top: 8px;        padding: 24px;
-
-      }        background: rgba(255, 255, 255, 0.02);
-
-        border-radius: var(--radius-md);
-
-      .save-config-btn {        transition: all 0.3s ease;
-
-        background: linear-gradient(135deg, var(--spotify-green), #1ED760);      }
-
-        color: white;
-
-        padding: 14px 32px;      .stat:hover {
-
-        border-radius: 8px;        background: rgba(255, 255, 255, 0.05);
-
-        border: none;        transform: translateY(-4px);
-
-        font-weight: 600;      }
-
-        font-size: 1.1rem;
-
-        cursor: pointer;      .stat-value {
-
-        transition: all 0.3s ease;        font-size: 2.5rem;
-
-        width: 100%;        font-weight: 700;
-
-        margin-top: 20px;        background: var(--accent-gradient);
-
-      }        -webkit-background-clip: text;
-
-        -webkit-text-fill-color: transparent;
-
-      .save-config-btn:hover {        background-clip: text;
-
-        transform: translateY(-2px);        margin-bottom: 8px;
-
-        box-shadow: 0 8px 25px rgba(29, 185, 84, 0.4);      }
-
-      }
-
-      .stat-label {
-
-      /* Stats */        font-size: 0.875rem;
-
-      .stats-grid {        color: var(--text-secondary);
-
-        display: grid;        font-weight: 500;
-
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));        text-transform: uppercase;
-
-        gap: 30px;        letter-spacing: 1px;
-
-        margin: 40px 0;      }
-
-      }
-
-      /* Features Grid */
-
-      .stat-card {      .features {
-
-        text-align: center;        display: grid;
-
-        padding: 30px;        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-
-        background: rgba(255, 255, 255, 0.02);        gap: 24px;
-
-        border-radius: 16px;        margin: 60px 0;
-
-        transition: all 0.3s ease;      }
-
-      }
-
-      .feature-card {
-
-      .stat-card:hover {        background: var(--card-bg);
-
-        background: rgba(255, 255, 255, 0.05);        border-radius: var(--radius-md);
-
-        transform: translateY(-4px);        padding: 36px 28px;
-
-      }        border: 1px solid rgba(255, 255, 255, 0.05);
-
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-
-      .stat-value {        animation: fadeInUp 0.8s ease-out both;
-
-        font-size: 3rem;      }
-
-        font-weight: 700;
-
-        color: var(--text-primary);      .feature-card:nth-child(1) { animation-delay: 0.3s; }
-
-        margin-bottom: 10px;      .feature-card:nth-child(2) { animation-delay: 0.4s; }
-
-      }      .feature-card:nth-child(3) { animation-delay: 0.5s; }
-
-      .feature-card:nth-child(4) { animation-delay: 0.6s; }
-
-      .stat-label {      .feature-card:nth-child(5) { animation-delay: 0.7s; }
-
-        font-size: 0.9rem;
-
-        color: var(--text-secondary);      .feature-card:hover {
-
-        text-transform: uppercase;        transform: translateY(-8px);
-
-        letter-spacing: 1px;        border-color: rgba(29, 185, 84, 0.3);
-
-      }        box-shadow: 0 12px 40px rgba(29, 185, 84, 0.15);
-
-      }
-
-      /* Footer */
-
-      footer {      .feature-icon {
-
-        background: rgba(0, 0, 0, 0.3);        font-size: 3rem;
-
-        border-top: 1px solid rgba(255, 255, 255, 0.05);        margin-bottom: 20px;
-
-        padding: 60px 0 30px;        display: inline-block;
-
-        margin-top: 100px;        filter: grayscale(20%);
-
-      }      }
-
-
-
-      .footer-content {      .feature-title {
-
-        display: grid;        font-size: 1.25rem;
-
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));        margin-bottom: 12px;
-
-        gap: 40px;        font-weight: 600;
-
-        margin-bottom: 40px;        color: var(--text-primary);
-
-      }      }
-
-
-
-      .footer-section h3 {      .feature-card p {
-
-        font-size: 1.2rem;        color: var(--text-secondary);
-
-        margin-bottom: 20px;        font-size: 0.9375rem;
-
-        color: var(--text-primary);        line-height: 1.7;
-
-      }      }
-
-
-
-      .footer-section ul {      /* API Section */
-
-        list-style: none;      .api-section {
-
-      }        background: var(--card-bg);
-
-        border-radius: var(--radius-lg);
-
-      .footer-section ul li {        padding: 48px;
-
-        margin-bottom: 12px;        margin: 60px 0;
-
-      }        border: 1px solid rgba(255, 255, 255, 0.05);
-
-        animation: fadeInUp 0.8s ease-out 0.8s both;
-
-      .footer-section a {      }
-
-        color: var(--text-secondary);
-
-        text-decoration: none;      .api-section h2 {
-
-        transition: color 0.3s ease;        font-size: 2rem;
-
-      }        margin-bottom: 36px;
-
-        font-weight: 600;
-
-      .footer-section a:hover {        letter-spacing: -0.5px;
-
-        color: var(--text-primary);      }
-
-      }
-
-      .endpoint {
-
-      .footer-bottom {        background: rgba(255, 255, 255, 0.02);
-
-        text-align: center;        border-left: 3px solid var(--spotify-green);
-
-        padding-top: 30px;        padding: 28px;
-
-        border-top: 1px solid rgba(255, 255, 255, 0.05);        margin: 20px 0;
-
-        color: var(--text-secondary);        border-radius: var(--radius-sm);
-
-      }        transition: all 0.3s ease;
-
-      }
-
-      .social-links {
-
-        display: flex;      .endpoint:hover {
-
-        gap: 15px;        background: rgba(255, 255, 255, 0.04);
-
-        margin-top: 15px;        border-left-width: 4px;
-
-      }      }
-
-
-
-      .social-links a {      .method {
-
-        width: 40px;        display: inline-block;
-
-        height: 40px;        background: var(--accent-gradient);
-
-        background: rgba(255, 255, 255, 0.05);        color: white;
-
-        border-radius: 50%;        padding: 6px 16px;
-
-        display: flex;        border-radius: 6px;
-
-        align-items: center;        font-weight: 600;
-
-        justify-content: center;        margin-right: 12px;
-
-        transition: all 0.3s ease;        font-size: 0.8125rem;
-
-      }        letter-spacing: 0.5px;
-
-        text-transform: uppercase;
-
-      .social-links a:hover {      }
-
-        background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
-
-        transform: translateY(-3px);      .url {
-
-      }        font-family: 'SF Mono', 'Monaco', 'Cascadia Code', 'Courier New', monospace;
-
-        color: var(--spotify-green);
-
-      /* Modal */        font-size: 0.9375rem;
-
-      .modal {        font-weight: 500;
-
-        display: none;      }
-
-        position: fixed;
-
-        top: 0;      .endpoint p {
-
-        left: 0;        margin-top: 16px;
-
-        width: 100%;        color: var(--text-secondary);
-
-        height: 100%;        line-height: 1.6;
-
-        background: rgba(0, 0, 0, 0.8);      }
-
-        z-index: 2000;
-
-        align-items: center;      .test-button {
-
-        justify-content: center;        background: var(--accent-gradient);
-
-        backdrop-filter: blur(10px);        color: white;
-
-      }        border: none;
-
-        padding: 12px 32px;
-
-      .modal.active {        border-radius: 8px;
-
-        display: flex;        font-size: 0.9375rem;
-
-      }        font-weight: 600;
-
-        cursor: pointer;
-
-      .modal-content {        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-
-        background: var(--card-bg);        margin: 12px 8px 0 0;
-
-        border-radius: 20px;        box-shadow: 0 4px 12px rgba(29, 185, 84, 0.25);
-
-        padding: 40px;      }
-
-        max-width: 600px;
-
-        width: 90%;      .test-button:hover {
-
-        max-height: 90vh;        transform: translateY(-2px);
-
-        overflow-y: auto;        box-shadow: 0 6px 20px rgba(29, 185, 84, 0.35);
-
-        position: relative;      }
-
-        border: 1px solid rgba(255, 255, 255, 0.1);
-
-      }      .test-button:active {
-
-        transform: translateY(0);
-
-      .modal-close {      }
-
-        position: absolute;
-
-        top: 20px;      .test-button:disabled {
-
-        right: 20px;        background: #374151;
-
-        background: rgba(255, 255, 255, 0.1);        cursor: not-allowed;
-
-        border: none;        box-shadow: none;
-
-        color: white;        transform: none;
-
-        font-size: 1.5rem;      }
-
-        width: 35px;
-
-        height: 35px;      .response-box {
-
-        border-radius: 50%;        background: rgba(0, 0, 0, 0.5);
-
-        cursor: pointer;        border: 1px solid rgba(255, 255, 255, 0.1);
-
-        transition: all 0.3s ease;        border-radius: var(--radius-sm);
-
-      }        padding: 24px;
-
-        margin-top: 24px;
-
-      .modal-close:hover {        font-family: 'SF Mono', 'Monaco', 'Cascadia Code', 'Courier New', monospace;
-
-        background: rgba(255, 255, 255, 0.2);        font-size: 0.875rem;
-
-      }        overflow-x: auto;
-
-        max-height: 400px;
-
-      /* Status Indicator */        overflow-y: auto;
-
-      .status-indicator {        display: none;
-
-        display: flex;        backdrop-filter: blur(10px);
-
-        align-items: center;      }
-
-        justify-content: center;
-
-        gap: 12px;      .response-box.show {
-
-        margin-bottom: 30px;        display: block;
-
-      }        animation: fadeIn 0.3s ease-out;
-
-      }
-
-      .status-dot {
-
-        width: 12px;      @keyframes fadeIn {
-
-        height: 12px;        from { opacity: 0; }
-
-        border-radius: 50%;        to { opacity: 1; }
-
-        position: relative;      }
-
-      }
-
-      pre {
-
-      .status-dot::before {        margin: 0;
-
-        content: '';        white-space: pre-wrap;
-
-        position: absolute;        word-wrap: break-word;
-
-        width: 100%;        color: var(--text-secondary);
-
-        height: 100%;        line-height: 1.6;
-
-        border-radius: 50%;      }
-
-        animation: ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
-
-      }      /* Scrollbar */
-
-      ::-webkit-scrollbar {
-
-      @keyframes ping {        width: 8px;
-
-        75%, 100% {        height: 8px;
-
-          transform: scale(2);      }
-
-          opacity: 0;
-
-        }      ::-webkit-scrollbar-track {
-
-      }        background: rgba(255, 255, 255, 0.05);
-
-      }
-
-      .status-dot.loading { background: #FFA500; }
-
-      .status-dot.loading::before { background: #FFA500; }      ::-webkit-scrollbar-thumb {
-
-      .status-dot.online { background: var(--spotify-green); }        background: rgba(29, 185, 84, 0.5);
-
-      .status-dot.online::before { background: var(--spotify-green); }        border-radius: 4px;
-
-      .status-dot.offline { background: #EF4444; }      }
-
-      .status-dot.offline::before { background: #EF4444; }
-
-      ::-webkit-scrollbar-thumb:hover {
-
-      /* Responsive */        background: var(--spotify-green);
-
-      @media (max-width: 768px) {      }
-
-        .nav-links {
-
-          display: none;      /* Footer */
-
-        }      footer {
-
-        text-align: center;
-
-        .logo-text {        padding: 60px 20px 40px;
-
-          font-size: 2.5rem;        color: var(--text-secondary);
-
-        }        font-size: 0.9375rem;
-
-        border-top: 1px solid rgba(255, 255, 255, 0.05);
-
-        .tagline {        margin-top: 80px;
-
-          font-size: 1.1rem;      }
-
-        }
-
-      footer p {
-
-        .section-title {        font-weight: 400;
-
-          font-size: 2rem;        letter-spacing: 0.5px;
-
-        }      }
-
-
-
-        .features-grid {      /* Responsive Design */
-
-          grid-template-columns: 1fr;      @media (max-width: 768px) {
-
-        }        .logo {
-
-          font-size: 2.5rem;
-
-        .setup-section, .config-form {        }
-
-          padding: 30px 20px;
-
-        }        .tagline {
-
-          font-size: 1rem;
-
-        .footer-content {        }
-
-          grid-template-columns: 1fr;
-
-        }        .status-card,
-
-      }        .api-section {
-
-          padding: 32px 24px;
-
-      /* Scrollbar */        }
-
-      ::-webkit-scrollbar {
-
-        width: 8px;        .features {
-
-      }          grid-template-columns: 1fr;
-
-        }
-
-      ::-webkit-scrollbar-track {
-
-        background: rgba(255, 255, 255, 0.05);        .stats {
-
-      }          grid-template-columns: 1fr;
-
-        }
-
-      ::-webkit-scrollbar-thumb {
-
-        background: rgba(59, 130, 246, 0.5);        .test-button {
-
-        border-radius: 4px;          width: 100%;
-
-      }          margin: 8px 0;
-
-        }
-
-      ::-webkit-scrollbar-thumb:hover {      }
-
-        background: var(--accent-blue);    </style>
-
-      }  </head>
-
-    </style>  <body>
-
-  </head>    <div class="container">
-
-  <body>      <header>
-
-    <div class="gradient-bg"></div>        <div class="logo">Playlistify AI</div>
-
-        <div class="tagline">Transform your musical ideas into perfect playlists with AI</div>
-
-    <!-- Navigation -->      </header>
-
-    <nav>
-
-      <div class="nav-container">      <div class="status-card">
-
-        <a href="#" class="nav-logo">        <div class="status-indicator">
-
-          <div class="logo-icon">🎵</div>          <div class="status-dot loading" id="statusDot"></div>
-
-          <span>Playlistify AI</span>          <h2 id="statusText">Checking Server Status...</h2>
-
-        </a>        </div>
-
-        <ul class="nav-links">
-
-          <li><a href="#features">Features</a></li>        <div class="stats" id="statsContainer" style="display: none">
-
-          <li><a href="#setup">Setup Guide</a></li>          <div class="stat">
-
-          <li><a href="#docs">Documentation</a></li>            <div class="stat-value" id="cacheHitRate">--</div>
-
-          <li><a href="#api">API</a></li>            <div class="stat-label">Cache Hit Rate</div>
-
-          <li><button class="setup-btn" onclick="openConfigModal()">Configure</button></li>          </div>
-
-        </ul>          <div class="stat">
-
-      </div>            <div class="stat-value" id="totalRequests">--</div>
-
-    </nav>            <div class="stat-label">Total Requests</div>
-
-          </div>
-
-    <div class="container">          <div class="stat">
-
-      <!-- Hero Section -->            <div class="stat-value" id="uptime">--</div>
-
-      <header>            <div class="stat-label">Uptime</div>
-
-        <h1 class="logo-text">Playlistify AI</h1>          </div>
-
-        <p class="tagline">Transform your musical ideas into perfect playlists with the power of AI</p>        </div>
-
-        <div class="cta-buttons">      </div>
-
-          <button class="btn-primary" onclick="openConfigModal()">Get Started</button>
-
-          <a href="#setup" class="btn-secondary">Learn More</a>      <div class="features">
-
-        </div>        <div class="feature-card">
-
-      </header>          <div class="feature-icon">🔍</div>
-
-          <div class="feature-title">Smart Search</div>
-
-      <!-- Status Card -->          <p>
-
-      <div class="card">            Search Spotify's vast library with intelligent filtering and ranking algorithms
-
-        <div class="status-indicator">          </p>
-
-          <div class="status-dot loading" id="statusDot"></div>        </div>
-
-          <h2 id="statusText">Checking Server Status...</h2>        <div class="feature-card">
-
-        </div>          <div class="feature-icon">🎯</div>
-
-          <div class="feature-title">AI Recommendations</div>
-
-        <div class="stats-grid" id="statsContainer" style="display: none">          <p>
-
-          <div class="stat-card">            Get personalized track recommendations powered by advanced machine learning
-
-            <div class="stat-value" id="cacheHitRate">--</div>          </p>
-
-            <div class="stat-label">Cache Hit Rate</div>        </div>
-
-          </div>        <div class="feature-card">
-
-          <div class="stat-card">          <div class="feature-icon">💬</div>
-
-            <div class="stat-value" id="totalRequests">--</div>          <div class="feature-title">Natural Language</div>
-
-            <div class="stat-label">Total Requests</div>          <p>
-
-          </div>            Describe your mood or activity in plain English to create perfect playlists
-
-          <div class="stat-card">          </p>
-
-            <div class="stat-value" id="uptime">--</div>        </div>
-
-            <div class="stat-label">Uptime</div>        <div class="feature-card">
-
-          </div>          <div class="feature-icon">⚡</div>
-
-        </div>          <div class="feature-title">Lightning Fast</div>
-
-      </div>          <p>Optimized caching and rate limiting for instant, reliable responses</p>
-
-        </div>
-
-      <!-- Features Section -->        <div class="feature-card">
-
-      <section id="features" style="margin-top: 100px;">          <div class="feature-icon">✨</div>
-
-        <h2 class="section-title">Powerful Features</h2>          <div class="feature-title">Auto-Created Playlists</div>
-
-        <p class="section-subtitle">Everything you need to create the perfect playlist experience</p>          <p>Instantly create and save playlists directly to your Spotify account</p>
-
-                </div>
-
-        <div class="features-grid">      </div>
-
-          <div class="feature-card">
-
-            <div class="feature-icon">🔍</div>      <div class="api-section">
-
-            <h3 class="feature-title">Smart Search</h3>        <h2>📡 API Endpoints</h2>
-
-            <p class="feature-desc">Search Spotify's vast library with intelligent filtering and ranking algorithms</p>
-
-          </div>        <div class="endpoint">
-
-          <div class="feature-card">          <div>
-
-            <div class="feature-icon">🎯</div>            <span class="method">GET</span>
-
-            <h3 class="feature-title">AI Recommendations</h3>            <span class="url">/</span>
-
-            <p class="feature-desc">Get personalized track recommendations powered by advanced machine learning</p>          </div>
-
-          </div>          <p>
-
-          <div class="feature-card">            Health check and service information endpoint
-
-            <div class="feature-icon">💬</div>          </p>
-
-            <h3 class="feature-title">Natural Language</h3>          <button class="test-button" onclick="testEndpoint('health')">
-
-            <p class="feature-desc">Describe your mood or activity in plain English to create perfect playlists</p>            Test Health Check
-
-          </div>          </button>
-
-          <div class="feature-card">        </div>
-
-            <div class="feature-icon">⚡</div>
-
-            <h3 class="feature-title">Lightning Fast</h3>        <div class="endpoint">
-
-            <p class="feature-desc">Optimized caching and rate limiting for instant, reliable responses</p>          <div>
-
-          </div>            <span class="method">GET</span>
-
-          <div class="feature-card">            <span class="url">/stats</span>
-
-            <div class="feature-icon">✨</div>          </div>
-
-            <h3 class="feature-title">Auto-Created Playlists</h3>          <p>
-
-            <p class="feature-desc">Instantly create and save playlists directly to your Spotify account</p>            Server statistics and performance metrics in real-time
-
-          </div>          </p>
-
-          <div class="feature-card">          <button class="test-button" onclick="testEndpoint('stats')">
-
-            <div class="feature-icon">🔒</div>            Test Stats
-
-            <h3 class="feature-title">Secure & Private</h3>          </button>
-
-            <p class="feature-desc">Your credentials are stored securely and never shared</p>        </div>
-
-          </div>
-
-        </div>        <div class="endpoint">
-
-      </section>          <div>
-
-            <span class="method">POST</span>
-
-      <!-- Setup Guide Section -->            <span class="url">/mcp</span>
-
-      <section id="setup" class="setup-section">          </div>
-
-        <h2 class="section-title">Quick Setup Guide</h2>          <p>
-
-        <p class="section-subtitle">Get your Spotify credentials in 3 simple steps</p>            Main MCP endpoint for search, recommendations, and playlist creation
-
-                  </p>
-
-        <div class="setup-steps">          <button class="test-button" onclick="testEndpoint('search')">
-
-          <div class="step">            Test Search
-
-            <div class="step-number">1</div>          </button>
-
-            <div class="step-content">          <button class="test-button" onclick="testEndpoint('recommend')">
-
-              <h3>Create Spotify App</h3>            Test Recommend
-
-              <p>Go to <a href="https://developer.spotify.com/dashboard" target="_blank" style="color: var(--accent-blue)">Spotify Developer Dashboard</a> → Click "Create App" → Fill in app name and description → Set Redirect URI to <code>http://localhost:3000/callback</code></p>          </button>
-
-            </div>        </div>
-
-          </div>
-
-        <div class="response-box" id="responseBox">
-
-          <div class="step">          <pre id="responseContent"></pre>
-
-            <div class="step-number">2</div>        </div>
-
-            <div class="step-content">      </div>
-
-              <h3>Get Your Credentials</h3>
-
-              <p>After creating the app, you'll see your <strong>Client ID</strong> immediately. Click "Show Client Secret" to reveal your <strong>Client Secret</strong>. Copy both values.</p>      <footer>
-
-            </div>        <p>Powered by Apify & Spotify | Built with ❤️</p>
-
-          </div>      </footer>
-
-    </div>
-
-          <div class="step">
-
-            <div class="step-number">3</div>    <script>
-
-            <div class="step-content">      const API_BASE = window.location.origin;
-
-              <h3>Generate Refresh Token</h3>
-
-              <p>Visit <a href="https://github.com/avanishkasar/Playlistify-AI#getting-refresh-token" target="_blank" style="color: var(--accent-blue)">our GitHub guide</a> for the easiest method, or use the <a href="https://developer.spotify.com/console/post-playlists/" target="_blank" style="color: var(--accent-blue)">Spotify Console</a> to authorize and get your refresh token.</p>      async function checkHealth() {
-
-            </div>        try {
-
-          </div>          const response = await fetch(`${API_BASE}/`);
-
-        </div>          const data = await response.json();
-
-
-
-        <div style="margin-top: 40px; padding: 20px; background: rgba(59, 130, 246, 0.1); border-radius: 12px; border-left: 4px solid var(--accent-blue);">          document.getElementById("statusDot").className = "status-dot online";
-
-          <strong>💡 Pro Tip:</strong> Keep your credentials safe! Never share your Client Secret or Refresh Token publicly. You can update them anytime using the configuration form below.          document.getElementById("statusText").textContent =
-
-        </div>            "✅ Server Online - " + data.service;
-
-      </section>
-
-          // Load stats
-
-      <!-- Configuration Form -->          loadStats();
-
-      <section id="configure" class="config-form">        } catch (error) {
-
-        <h2 class="section-title">Configure Your Credentials</h2>          document.getElementById("statusDot").className = "status-dot offline";
-
-        <p class="section-subtitle">Enter your Spotify API credentials to start creating playlists</p>          document.getElementById("statusText").textContent =
-
-            "❌ Server Offline";
-
-        <form id="configForm" onsubmit="saveConfig(event)">        }
-
-          <div class="form-group">      }
-
-            <label for="clientId">Spotify Client ID *</label>
-
-            <input type="text" id="clientId" placeholder="Enter your Client ID" required>      async function loadStats() {
-
-            <p class="form-help">Found in your Spotify App dashboard</p>        try {
-
-          </div>          const response = await fetch(`${API_BASE}/stats`);
-
-          const data = await response.json();
-
-          <div class="form-group">
-
-            <label for="clientSecret">Spotify Client Secret *</label>          document.getElementById("cacheHitRate").textContent =
-
-            <input type="password" id="clientSecret" placeholder="Enter your Client Secret" required>            data.cache?.hitRate || "N/A";
-
-            <p class="form-help">Click "Show Client Secret" in your Spotify App dashboard</p>          document.getElementById("totalRequests").textContent =
-
-          </div>            data.rateLimiter?.requestsServed || "0";
-
-          document.getElementById("uptime").textContent = formatUptime(
-
-          <div class="form-group">            data.uptime
-
-            <label for="refreshToken">Spotify Refresh Token *</label>          );
-
-            <textarea id="refreshToken" rows="3" placeholder="Enter your Refresh Token" required></textarea>          document.getElementById("statsContainer").style.display = "flex";
-
-            <p class="form-help">Follow the setup guide above to generate your refresh token</p>        } catch (error) {
-
-          </div>          console.error("Failed to load stats:", error);
-
-        }
-
-          <button type="submit" class="save-config-btn">💾 Save Configuration</button>      }
-
-        </form>
-
-      function formatUptime(seconds) {
-
-        <div id="configStatus" style="margin-top: 20px; padding: 15px; border-radius: 8px; display: none;"></div>        if (!seconds) return "N/A";
-
-      </section>        const hours = Math.floor(seconds / 3600);
-
-        const minutes = Math.floor((seconds % 3600) / 60);
-
-      <!-- Documentation Section -->        return `${hours}h ${minutes}m`;
-
-      <section id="docs" style="margin-top: 100px;">      }
-
-        <h2 class="section-title">📚 Documentation</h2>
-
-        <p class="section-subtitle">Learn how to use Playlistify AI</p>      async function testEndpoint(type) {
-
-        const responseBox = document.getElementById("responseBox");
-
-        <div class="features-grid">        const responseContent = document.getElementById("responseContent");
-
-          <div class="feature-card">
-
-            <div class="feature-icon">📖</div>        responseBox.classList.add("show");
-
-            <h3 class="feature-title">API Reference</h3>        responseContent.textContent = "Loading...";
-
-            <p class="feature-desc">Complete documentation of all available endpoints and parameters</p>
-
-            <a href="#api" style="color: var(--accent-blue); margin-top: 10px; display: inline-block;">View API Docs →</a>        try {
-
-          </div>          let response, data;
-
-          <div class="feature-card">
-
-            <div class="feature-icon">🎓</div>          switch (type) {
-
-            <h3 class="feature-title">Video Tutorials</h3>            case "health":
-
-            <p class="feature-desc">Step-by-step video guides to help you get started quickly</p>              response = await fetch(`${API_BASE}/`);
-
-            <p style="color: var(--text-secondary); margin-top: 10px; font-size: 0.9rem;">Coming soon...</p>              data = await response.json();
-
-          </div>              break;
-
-          <div class="feature-card">
-
-            <div class="feature-icon">💡</div>            case "stats":
-
-            <h3 class="feature-title">Examples</h3>              response = await fetch(`${API_BASE}/stats`);
-
-            <p class="feature-desc">Real-world examples and use cases to inspire your playlists</p>              data = await response.json();
-
-            <a href="https://github.com/avanishkasar/Playlistify-AI/tree/main/examples" target="_blank" style="color: var(--accent-blue); margin-top: 10px; display: inline-block;">Browse Examples →</a>              break;
-
-          </div>
-
-        </div>            case "search":
-
-      </section>              response = await fetch(`${API_BASE}/mcp`, {
-
-                method: "POST",
-
-      <!-- API Section -->                headers: { "Content-Type": "application/json" },
-
-      <section id="api" class="card" style="margin-top: 100px;">                body: JSON.stringify({
-
-        <h2 class="section-title">🔌 API Endpoints</h2>                  tool: "search-track",
-
-                          input: { query: "happy", limit: 3 },
-
-        <div style="background: rgba(255, 255, 255, 0.02); border-radius: 12px; padding: 25px; margin: 20px 0; border-left: 3px solid var(--accent-blue);">                }),
-
-          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">              });
-
-            <span style="background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple)); color: white; padding: 4px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 600;">GET</span>              data = await response.json();
-
-            <code style="color: var(--accent-blue); font-size: 1.1rem;">/</code>              break;
-
-          </div>
-
-          <p style="color: var(--text-secondary); margin-bottom: 15px;">Health check and service information endpoint</p>            case "recommend":
-
-          <button class="btn-secondary" onclick="testEndpoint('health')" style="padding: 8px 20px; font-size: 0.95rem;">Test Endpoint</button>              response = await fetch(`${API_BASE}/mcp`, {
-
-        </div>                method: "POST",
-
-                headers: { "Content-Type": "application/json" },
-
-        <div style="background: rgba(255, 255, 255, 0.02); border-radius: 12px; padding: 25px; margin: 20px 0; border-left: 3px solid var(--accent-purple);">                body: JSON.stringify({
-
-          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">                  tool: "recommend",
-
-            <span style="background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink)); color: white; padding: 4px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 600;">GET</span>                  input: { seedTracks: ["3n3Ppam7vgaVa1iaRUc9Lp"], limit: 3 },
-
-            <code style="color: var(--accent-purple); font-size: 1.1rem;">/stats</code>                }),
-
-          </div>              });
-
-          <p style="color: var(--text-secondary); margin-bottom: 15px;">Server statistics and performance metrics in real-time</p>              data = await response.json();
-
-          <button class="btn-secondary" onclick="testEndpoint('stats')" style="padding: 8px 20px; font-size: 0.95rem;">Test Endpoint</button>              break;
-
-        </div>          }
-
-
-
-        <div style="background: rgba(255, 255, 255, 0.02); border-radius: 12px; padding: 25px; margin: 20px 0; border-left: 3px solid var(--accent-pink);">          responseContent.textContent = JSON.stringify(data, null, 2);
-
-          <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">        } catch (error) {
-
-            <span style="background: linear-gradient(135deg, var(--accent-pink), var(--spotify-green)); color: white; padding: 4px 12px; border-radius: 6px; font-size: 0.85rem; font-weight: 600;">POST</span>          responseContent.textContent = "Error: " + error.message;
-
-            <code style="color: var(--accent-pink); font-size: 1.1rem;">/mcp</code>        }
-
-          </div>      }
-
-          <p style="color: var(--text-secondary); margin-bottom: 15px;">Main MCP endpoint for search, recommendations, and playlist creation</p>
-
-          <div style="display: flex; gap: 10px; flex-wrap: wrap;">      // Check health on load
-
-            <button class="btn-secondary" onclick="testEndpoint('search')" style="padding: 8px 20px; font-size: 0.95rem;">Test Search</button>      checkHealth();
-
-            <button class="btn-secondary" onclick="testEndpoint('recommend')" style="padding: 8px 20px; font-size: 0.95rem;">Test Recommend</button>
-
-          </div>      // Refresh stats every 30 seconds
-
-        </div>      setInterval(loadStats, 30000);
-
-    </script>
-
-        <div id="responseBox" style="background: rgba(0, 0, 0, 0.5); border-radius: 12px; padding: 25px; margin-top: 30px; display: none; border: 1px solid rgba(255, 255, 255, 0.1);">  </body>
-
-          <h3 style="margin-bottom: 15px;">Response:</h3></html>
-
-          <pre id="responseContent" style="overflow-x: auto; color: var(--text-secondary); line-height: 1.6;"></pre>
-        </div>
-      </section>
-    </div>
-
-    <!-- Footer -->
-    <footer>
-      <div class="container">
-        <div class="footer-content">
-          <div class="footer-section">
-            <h3>Playlistify AI</h3>
-            <p style="color: var(--text-secondary); margin-bottom: 15px;">AI-powered Spotify playlist creator that transforms your musical ideas into reality.</p>
-            <div class="social-links">
-              <a href="https://github.com/avanishkasar/Playlistify-AI" target="_blank" title="GitHub">🐙</a>
-              <a href="https://twitter.com" target="_blank" title="Twitter">🐦</a>
-              <a href="https://linkedin.com" target="_blank" title="LinkedIn">💼</a>
-            </div>
-          </div>
-          
-          <div class="footer-section">
-            <h3>Quick Links</h3>
-            <ul>
-              <li><a href="#features">Features</a></li>
-              <li><a href="#setup">Setup Guide</a></li>
-              <li><a href="#docs">Documentation</a></li>
-              <li><a href="#api">API Reference</a></li>
-            </ul>
-          </div>
-
-          <div class="footer-section">
-            <h3>Resources</h3>
-            <ul>
-              <li><a href="https://github.com/avanishkasar/Playlistify-AI" target="_blank">GitHub Repository</a></li>
-              <li><a href="https://developer.spotify.com/documentation/web-api" target="_blank">Spotify API Docs</a></li>
-              <li><a href="https://apify.com" target="_blank">Apify Platform</a></li>
-              <li><a href="#configure">Configuration</a></li>
-            </ul>
-          </div>
-
-          <div class="footer-section">
-            <h3>Contact</h3>
-            <ul>
-              <li><a href="mailto:support@playlistify.ai">support@playlistify.ai</a></li>
-              <li><a href="https://github.com/avanishkasar/Playlistify-AI/issues" target="_blank">Report an Issue</a></li>
-              <li><a href="#" onclick="openConfigModal(); return false;">Get Help</a></li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="footer-bottom">
-          <p>&copy; 2025 Playlistify AI. All rights reserved.</p>
-          <p style="margin-top: 10px; font-size: 0.9rem;">Powered by <a href="https://apify.com" target="_blank" style="color: var(--accent-blue);">Apify</a> & <a href="https://spotify.com" target="_blank" style="color: var(--spotify-green);">Spotify</a></p>
-          <p style="margin-top: 10px; font-size: 0.85rem;">
-            <a href="#" style="color: var(--text-secondary);">Privacy Policy</a> • 
-            <a href="#" style="color: var(--text-secondary);">Terms of Service</a> • 
-            <a href="#" style="color: var(--text-secondary);">Cookie Policy</a>
-          </p>
-        </div>
-      </div>
-    </footer>
-
-    <!-- Configuration Modal -->
-    <div id="configModal" class="modal">
-      <div class="modal-content">
-        <button class="modal-close" onclick="closeConfigModal()">×</button>
-        <h2 style="margin-bottom: 20px;">Welcome to Playlistify AI! 🎵</h2>
-        <p style="color: var(--text-secondary); margin-bottom: 30px;">To get started, you'll need to configure your Spotify credentials. Don't worry, it's quick and easy!</p>
-        
-        <div style="background: rgba(59, 130, 246, 0.1); padding: 20px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid var(--accent-blue);">
-          <strong>📝 What you'll need:</strong>
-          <ul style="margin-top: 10px; margin-left: 20px; color: var(--text-secondary);">
-            <li>Spotify Client ID</li>
-            <li>Spotify Client Secret</li>
-            <li>Spotify Refresh Token</li>
-          </ul>
-        </div>
-
-        <p style="color: var(--text-secondary); margin-bottom: 20px;">Follow our <a href="#setup" onclick="closeConfigModal()" style="color: var(--accent-blue);">setup guide</a> to get these credentials, then enter them in the <a href="#configure" onclick="closeConfigModal()" style="color: var(--accent-blue);">configuration form</a>.</p>
-
-        <button class="btn-primary" onclick="closeConfigModal(); document.getElementById('configure').scrollIntoView({behavior: 'smooth'});" style="width: 100%;">Go to Configuration Form</button>
-      </div>
-    </div>
-
-    <script>
-      const API_BASE = window.location.origin;
-
-      // Check server health
-      async function checkHealth() {
-        try {
-          const response = await fetch(`${API_BASE}/`);
-          const data = await response.json();
-          document.getElementById("statusDot").className = "status-dot online";
-          document.getElementById("statusText").textContent = "✅ Server Online - " + data.service;
-          loadStats();
-        } catch (error) {
-          document.getElementById("statusDot").className = "status-dot offline";
-          document.getElementById("statusText").textContent = "❌ Server Offline";
-        }
-      }
-
-      // Load statistics
-      async function loadStats() {
-        try {
-          const response = await fetch(`${API_BASE}/stats`);
-          const data = await response.json();
-          document.getElementById("cacheHitRate").textContent = data.cache?.hitRate || "N/A";
-          document.getElementById("totalRequests").textContent = data.rateLimiter?.requestsServed || "0";
-          document.getElementById("uptime").textContent = formatUptime(data.uptime);
-          document.getElementById("statsContainer").style.display = "grid";
-        } catch (error) {
-          console.error("Failed to load stats:", error);
-        }
-      }
-
-      function formatUptime(seconds) {
-        if (!seconds) return "N/A";
-        const hours = Math.floor(seconds / 3600);
-        const minutes = Math.floor((seconds % 3600) / 60);
-        return `${hours}h ${minutes}m`;
-      }
-
-      // Test API endpoints
-      async function testEndpoint(type) {
-        const responseBox = document.getElementById("responseBox");
-        const responseContent = document.getElementById("responseContent");
-        responseBox.style.display = "block";
-        responseContent.textContent = "Loading...";
-
-        try {
-          let response, data;
-          switch (type) {
-            case "health":
-              response = await fetch(`${API_BASE}/`);
-              data = await response.json();
-              break;
-            case "stats":
-              response = await fetch(`${API_BASE}/stats`);
-              data = await response.json();
-              break;
-            case "search":
-              response = await fetch(`${API_BASE}/mcp`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ tool: "search-track", input: { query: "happy", limit: 3 } })
-              });
-              data = await response.json();
-              break;
-            case "recommend":
-              response = await fetch(`${API_BASE}/mcp`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ tool: "recommend", input: { seedTracks: ["3n3Ppam7vgaVa1iaRUc9Lp"], limit: 3 } })
-              });
-              data = await response.json();
-              break;
-          }
-          responseContent.textContent = JSON.stringify(data, null, 2);
-        } catch (error) {
-          responseContent.textContent = "Error: " + error.message;
-        }
-      }
-
-      // Configuration functions
-      function saveConfig(event) {
-        event.preventDefault();
-        const config = {
-          clientId: document.getElementById("clientId").value,
-          clientSecret: document.getElementById("clientSecret").value,
-          refreshToken: document.getElementById("refreshToken").value
-        };
-        
-        localStorage.setItem("spotifyConfig", JSON.stringify(config));
-        
-        const statusDiv = document.getElementById("configStatus");
-        statusDiv.style.display = "block";
-        statusDiv.style.background = "rgba(29, 185, 84, 0.2)";
-        statusDiv.style.border = "1px solid var(--spotify-green)";
-        statusDiv.style.color = "var(--spotify-green)";
-        statusDiv.innerHTML = "✅ Configuration saved successfully! You can now use the API.";
-        
-        setTimeout(() => {
-          statusDiv.style.display = "none";
-        }, 5000);
-      }
-
-      // Load saved config
-      window.addEventListener('load', () => {
-        const savedConfig = localStorage.getItem("spotifyConfig");
-        if (savedConfig) {
-          const config = JSON.parse(savedConfig);
-          document.getElementById("clientId").value = config.clientId || "";
-          document.getElementById("clientSecret").value = config.clientSecret || "";
-          document.getElementById("refreshToken").value = config.refreshToken || "";
-        }
-      });
-
-      // Modal functions
-      function openConfigModal() {
-        document.getElementById("configModal").classList.add("active");
-      }
-
-      function closeConfigModal() {
-        document.getElementById("configModal").classList.remove("active");
-      }
-
-      // Initialize
-      checkHealth();
-      setInterval(loadStats, 30000);
-    </script>
-  </body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Playlistify - Create AI-Powered Spotify Playlists</title>
+<meta name="description" content="Generate personalized Spotify playlists with AI. Describe your mood or activity and get the perfect playlist in seconds.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root {
+--background: 0 0% 9%;
+--foreground: 0 0% 98%;
+--card: 0 0% 12%;
+--card-foreground: 0 0% 98%;
+--primary: 141 73% 42%;
+--primary-foreground: 0 0% 100%;
+--secondary: 0 0% 18%;
+--secondary-foreground: 0 0% 98%;
+--muted: 0 0% 25%;
+--muted-foreground: 0 0% 65%;
+--border: 0 0% 20%;
+--input: 0 0% 18%;
+--radius: 0.75rem;
+--spotify-green: 141 73% 42%;
+--spotify-green-dark: 141 73% 35%;
+--spotify-green-light: 141 73% 50%;
+--glass-bg: hsla(0, 0%, 15%, 0.7);
+--glass-border: hsla(0, 0%, 100%, 0.1);
+--shadow-sm: 0 2px 8px hsla(0, 0%, 0%, 0.3);
+--shadow-md: 0 4px 16px hsla(0, 0%, 0%, 0.4);
+--shadow-lg: 0 8px 32px hsla(0, 0%, 0%, 0.5);
+--shadow-glow: 0 0 30px hsla(141, 73%, 42%, 0.3);
+--transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+*::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+background: hsl(var(--background));
+color: hsl(var(--foreground));
+line-height: 1.6;
+min-height: 100vh;
+display: flex;
+flex-direction: column;
+position: relative;
+overflow-x: hidden;
+}
+.animated-gradient-bg {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+z-index: -1;
+overflow: hidden;
+background: hsl(var(--background));
+}
+.gradient-blob {
+position: absolute;
+border-radius: 50%;
+filter: blur(80px);
+opacity: 0.5;
+animation: float 20s ease-in-out infinite;
+}
+.blob-1 {
+width: 500px;
+height: 500px;
+background: radial-gradient(circle, hsla(141, 73%, 42%, 0.4), transparent 70%);
+top: -10%;
+left: -10%;
+animation-delay: 0s;
+}
+.blob-2 {
+width: 400px;
+height: 400px;
+background: radial-gradient(circle, hsla(141, 73%, 50%, 0.3), transparent 70%);
+top: 50%;
+right: -5%;
+animation-delay: 3s;
+}
+.blob-3 {
+width: 600px;
+height: 600px;
+background: radial-gradient(circle, hsla(141, 73%, 35%, 0.35), transparent 70%);
+bottom: -15%;
+left: 30%;
+animation-delay: 7s;
+}
+@keyframes float {
+0%, 100% { transform: translate(0, 0) scale(1); }
+33% { transform: translate(30px, -50px) scale(1.1); }
+66% { transform: translate(-20px, 20px) scale(0.9); }
+}
+nav {
+background: hsla(var(--card), 0.8);
+border-bottom: 1px solid hsl(var(--border));
+position: sticky;
+top: 0;
+z-index: 50;
+backdrop-filter: blur(12px);
+-webkit-backdrop-filter: blur(12px);
+}
+.nav-container {
+max-width: 1200px;
+margin: 0 auto;
+padding: 1rem 1.5rem;
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+.logo {
+display: flex;
+align-items: center;
+gap: 0.5rem;
+font-size: 1.25rem;
+font-weight: 700;
+color: hsl(var(--primary));
+text-decoration: none;
+transition: var(--transition-smooth);
+}
+.logo:hover {
+color: hsl(var(--spotify-green-light));
+}
+.nav-links {
+display: flex;
+gap: 0.25rem;
+align-items: center;
+}
+.nav-btn {
+padding: 0.5rem 1rem;
+border-radius: 0.5rem;
+font-size: 0.875rem;
+font-weight: 500;
+text-decoration: none;
+color: hsl(var(--foreground));
+background: transparent;
+border: none;
+cursor: pointer;
+transition: var(--transition-smooth);
+display: inline-flex;
+align-items: center;
+gap: 0.5rem;
+}
+.nav-btn:hover {
+background: hsl(var(--secondary));
+}
+.nav-btn.active {
+background: hsl(var(--primary));
+color: hsl(var(--primary-foreground));
+}
+.container {
+max-width: 1200px;
+margin: 0 auto;
+padding: 0 1.5rem;
+}
+.hero {
+flex: 1;
+position: relative;
+overflow: hidden;
+}
+.hero-bg {
+position: absolute;
+inset: 0;
+background: linear-gradient(135deg, hsla(141, 73%, 42%, 0.2) 0%, hsl(var(--background)) 40%, hsl(var(--background)) 100%);
+}
+.hero-content {
+max-width: 1200px;
+margin: 0 auto;
+padding: 5rem 1.5rem;
+position: relative;
+}
+.hero-inner {
+max-width: 64rem;
+margin: 0 auto;
+text-align: center;
+}
+.badge {
+display: inline-flex;
+align-items: center;
+gap: 0.5rem;
+padding: 0.5rem 1rem;
+border-radius: 9999px;
+background: hsla(141, 73%, 42%, 0.1);
+border: 1px solid hsla(141, 73%, 42%, 0.2);
+color: hsl(var(--primary));
+font-size: 0.875rem;
+margin-bottom: 2rem;
+animation: fadeIn 0.6s ease-out;
+}
+h1 {
+font-size: clamp(2.5rem, 8vw, 5rem);
+font-weight: 700;
+line-height: 1.1;
+margin-bottom: 1.5rem;
+color: hsl(var(--foreground));
+animation: fadeIn 0.8s ease-out;
+}
+@media (min-width: 768px) {
+h1 { font-size: clamp(4rem, 8vw, 7rem); }
+}
+.text-primary {
+color: hsl(var(--primary));
+}
+.hero-description {
+font-size: 1.25rem;
+color: hsl(var(--muted-foreground));
+max-width: 42rem;
+margin: 0 auto 2rem;
+animation: fadeIn 1s ease-out;
+}
+.hero-buttons {
+display: flex;
+flex-direction: column;
+gap: 1rem;
+align-items: center;
+animation: fadeIn 1.2s ease-out;
+}
+@media (min-width: 640px) {
+.hero-buttons {
+flex-direction: row;
+justify-content: center;
+}
+}
+.btn {
+padding: 0.75rem 1.5rem;
+font-size: 1.125rem;
+font-weight: 600;
+border-radius: var(--radius);
+border: none;
+cursor: pointer;
+text-decoration: none;
+display: inline-flex;
+align-items: center;
+gap: 0.5rem;
+transition: var(--transition-smooth);
+}
+.btn-primary {
+background: hsl(var(--primary));
+color: hsl(var(--primary-foreground));
+box-shadow: var(--shadow-glow);
+}
+.btn-primary:hover {
+background: hsl(var(--spotify-green-light));
+transform: translateY(-2px);
+box-shadow: 0 0 40px hsla(141, 73%, 42%, 0.5), 0 10px 25px hsla(0, 0%, 0%, 0.3);
+}
+.btn-outline {
+background: transparent;
+color: hsl(var(--foreground));
+border: 1px solid hsl(var(--border));
+}
+.btn-outline:hover {
+background: hsl(var(--secondary));
+}
+.section {
+padding: 5rem 0;
+position: relative;
+}
+.section-dark {
+background: hsla(var(--card), 0.5);
+}
+.section-title {
+font-size: clamp(2rem, 5vw, 3rem);
+font-weight: 700;
+text-align: center;
+color: hsl(var(--foreground));
+margin-bottom: 1rem;
+}
+.section-subtitle {
+font-size: 1.125rem;
+color: hsl(var(--muted-foreground));
+text-align: center;
+margin-bottom: 3rem;
+}
+.grid {
+display: grid;
+gap: 2rem;
+}
+@media (min-width: 768px) {
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-4 { grid-template-columns: repeat(4, 1fr); }
+}
+.card {
+background: var(--glass-bg);
+backdrop-filter: blur(12px);
+-webkit-backdrop-filter: blur(12px);
+border: 1px solid var(--glass-border);
+border-radius: var(--radius);
+padding: 1.5rem;
+text-align: center;
+transition: var(--transition-smooth);
+}
+.card:hover {
+transform: translateY(-4px);
+box-shadow: var(--shadow-glow);
+border-color: hsla(141, 73%, 42%, 0.3);
+}
+.icon-circle {
+width: 3rem;
+height: 3rem;
+margin: 0 auto 1rem;
+border-radius: 50%;
+background: hsla(141, 73%, 42%, 0.1);
+display: flex;
+align-items: center;
+justify-content: center;
+color: hsl(var(--primary));
+}
+.card-title {
+font-size: 1.25rem;
+font-weight: 600;
+color: hsl(var(--foreground));
+margin-bottom: 1rem;
+}
+.card-text {
+color: hsl(var(--muted-foreground));
+font-size: 0.9375rem;
+line-height: 1.6;
+}
+.cta-card {
+background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--spotify-green-dark)) 100%);
+border-radius: var(--radius);
+padding: 3rem;
+text-align: center;
+max-width: 64rem;
+margin: 0 auto;
+box-shadow: var(--shadow-glow), var(--shadow-lg);
+}
+.cta-title {
+font-size: clamp(2rem, 5vw, 3rem);
+font-weight: 700;
+color: white;
+margin-bottom: 1.5rem;
+}
+.cta-text {
+font-size: 1.25rem;
+color: rgba(255, 255, 255, 0.9);
+margin-bottom: 1.5rem;
+}
+.btn-secondary {
+background: hsl(var(--secondary));
+color: hsl(var(--secondary-foreground));
+}
+.btn-secondary:hover {
+background: hsl(var(--muted));
+transform: translateY(-2px);
+}
+footer {
+background: hsl(var(--card));
+border-top: 1px solid hsl(var(--border));
+margin-top: auto;
+padding: 2rem 0;
+}
+.footer-grid {
+display: grid;
+gap: 2rem;
+margin-bottom: 2rem;
+}
+@media (min-width: 768px) {
+.footer-grid { grid-template-columns: repeat(4, 1fr); }
+}
+.footer-brand {
+display: flex;
+align-items: center;
+gap: 0.5rem;
+font-size: 1.125rem;
+font-weight: 700;
+color: hsl(var(--primary));
+margin-bottom: 1rem;
+}
+.footer-description {
+font-size: 0.875rem;
+color: hsl(var(--muted-foreground));
+line-height: 1.5;
+}
+.footer-title {
+font-weight: 600;
+color: hsl(var(--foreground));
+margin-bottom: 0.75rem;
+}
+.footer-links {
+list-style: none;
+}
+.footer-links li {
+margin-bottom: 0.5rem;
+}
+.footer-link {
+color: hsl(var(--muted-foreground));
+text-decoration: none;
+font-size: 0.875rem;
+transition: var(--transition-smooth);
+display: inline-flex;
+align-items: center;
+gap: 0.5rem;
+}
+.footer-link:hover {
+color: hsl(var(--primary));
+}
+.footer-bottom {
+padding-top: 2rem;
+border-top: 1px solid hsl(var(--border));
+display: flex;
+justify-content: space-between;
+align-items: center;
+flex-wrap: wrap;
+gap: 1rem;
+}
+.footer-text {
+color: hsl(var(--muted-foreground));
+font-size: 0.875rem;
+}
+.icon {
+width: 1.5rem;
+height: 1.5rem;
+stroke-width: 2;
+}
+.icon-sm {
+width: 1rem;
+height: 1rem;
+}
+.icon-md {
+width: 1.25rem;
+height: 1.25rem;
+}
+@keyframes fadeIn {
+from {
+opacity: 0;
+transform: translateY(20px);
+}
+to {
+opacity: 1;
+transform: translateY(0);
+}
+}
+.modal {
+display: none;
+position: fixed;
+inset: 0;
+background: rgba(0, 0, 0, 0.8);
+z-index: 100;
+align-items: center;
+justify-content: center;
+padding: 1rem;
+}
+.modal.active { display: flex; }
+.modal-content {
+background: hsl(var(--card));
+border-radius: var(--radius);
+padding: 2rem;
+max-width: 500px;
+width: 100%;
+box-shadow: var(--shadow-lg);
+}
+.modal-header {
+display: flex;
+justify-content: space-between;
+align-items: center;
+margin-bottom: 1.5rem;
+}
+.modal-title {
+font-size: 1.5rem;
+font-weight: 700;
+color: hsl(var(--foreground));
+}
+.modal-close {
+background: none;
+border: none;
+color: hsl(var(--muted-foreground));
+cursor: pointer;
+font-size: 1.5rem;
+padding: 0.25rem;
+transition: var(--transition-smooth);
+line-height: 1;
+}
+.modal-close:hover {
+color: hsl(var(--foreground));
+}
+.form-group {
+margin-bottom: 1.5rem;
+}
+.form-label {
+display: block;
+font-weight: 500;
+margin-bottom: 0.5rem;
+color: hsl(var(--foreground));
+font-size: 0.9375rem;
+}
+.form-input {
+width: 100%;
+padding: 0.75rem;
+background: hsl(var(--input));
+border: 1px solid hsl(var(--border));
+border-radius: 0.5rem;
+color: hsl(var(--foreground));
+font-family: 'Inter', sans-serif;
+font-size: 1rem;
+transition: var(--transition-smooth);
+}
+.form-input:focus {
+outline: none;
+border-color: hsl(var(--primary));
+box-shadow: 0 0 0 3px hsla(141, 73%, 42%, 0.1);
+}
+.form-help {
+font-size: 0.8125rem;
+color: hsl(var(--muted-foreground));
+margin-top: 0.25rem;
+}
+.form-link {
+color: hsl(var(--primary));
+text-decoration: none;
+}
+.form-link:hover {
+text-decoration: underline;
+}
+@media (max-width: 640px) {
+.nav-links { gap: 0; }
+.nav-btn {
+padding: 0.5rem 0.75rem;
+font-size: 0.75rem;
+}
+.nav-btn svg { display: none; }
+}
+</style>
+</head>
+<body>
+<div class="animated-gradient-bg">
+<div class="gradient-blob blob-1"></div>
+<div class="gradient-blob blob-2"></div>
+<div class="gradient-blob blob-3"></div>
+</div>
+<nav>
+<div class="nav-container">
+<a href="#home" class="logo">
+<svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path>
+</svg>
+Apify Playlist AI
+</a>
+<div class="nav-links">
+<a href="#home" class="nav-btn active">
+<svg class="icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+</svg>
+Home
+</a>
+<a href="#features" class="nav-btn">
+<svg class="icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path>
+</svg>
+Generator
+</a>
+<a href="#contact" class="nav-btn">
+<svg class="icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+</svg>
+Contact
+</a>
+<button onclick="openConfigModal()" class="nav-btn">
+<svg class="icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+</svg>
+Report Issue
+</button>
+</div>
+</div>
+</nav>
+<section class="hero" id="home">
+<div class="hero-bg"></div>
+<div class="hero-content">
+<div class="hero-inner">
+<div class="badge">
+<svg style="width:1rem;height:1rem" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+</svg>
+Built for Apify $1M Challenge
+</div>
+<h1>
+AI-Powered Music<br>
+<span class="text-primary">Playlist Generator</span>
+</h1>
+<p class="hero-description">
+Create personalized music playlists using advanced AI and Apify Actors. Describe your mood, select genres, and let our AI curate the perfect soundtrack.
+</p>
+<div class="hero-buttons">
+<a href="#features" class="btn btn-primary">
+<svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path>
+</svg>
+Start Creating
+</a>
+<a href="#contact" class="btn btn-outline">Learn More</a>
+</div>
+</div>
+</div>
+</section>
+<section class="section section-dark" id="features">
+<div class="container">
+<h2 class="section-title">Why Choose Apify Playlist AI?</h2>
+<p class="section-subtitle">Powered by Apify Actors and cutting-edge AI technology</p>
+<div class="grid grid-3">
+<div class="card">
+<div class="icon-circle">
+<svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+</svg>
+</div>
+<h3 class="card-title">AI-Powered</h3>
+<p class="card-text">Advanced AI algorithms analyze your preferences to create perfect playlists</p>
+</div>
+<div class="card">
+<div class="icon-circle">
+<svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+</svg>
+</div>
+<h3 class="card-title">Apify Integration</h3>
+<p class="card-text">Leverages Apify Actors to scrape and analyze music data from multiple sources</p>
+</div>
+<div class="card">
+<div class="icon-circle">
+<svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+</svg>
+</div>
+<h3 class="card-title">Personalized</h3>
+<p class="card-text">Save your playlists, track your history, and discover new music tailored to you</p>
+</div>
+</div>
+</div>
+</section>
+<section class="section">
+<div class="container">
+<div class="cta-card">
+<h2 class="cta-title">Ready to Create Your Perfect Playlist?</h2>
+<p class="cta-text">Join thousands of music lovers using AI to discover their next favorite songs</p>
+<a href="#features" class="btn btn-secondary">
+<svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path>
+</svg>
+Get Started Now
+</a>
+</div>
+</div>
+</section>
+<footer id="contact">
+<div class="container">
+<div class="footer-grid">
+<div>
+<div class="footer-brand">
+<svg class="icon-md" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path stroke-linecap="round" stroke-linejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path>
+</svg>
+Apify Playlist AI
+</div>
+<p class="footer-description">AI-powered music playlist generator built for the Apify $1M Challenge</p>
+</div>
+<div>
+<h3 class="footer-title">Quick Links</h3>
+<ul class="footer-links">
+<li><a href="#home" class="footer-link">Home</a></li>
+<li><a href="#features" class="footer-link">Generator</a></li>
+<li><a href="#contact" class="footer-link">Contact</a></li>
+</ul>
+</div>
+<div>
+<h3 class="footer-title">Support</h3>
+<ul class="footer-links">
+<li>
+<a href="#" class="footer-link">
+<svg class="icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+</svg>
+Report Issue
+</a>
+</li>
+<li><a href="https://apify.com/challenge" target="_blank" class="footer-link">Apify Challenge</a></li>
+</ul>
+</div>
+<div>
+<h3 class="footer-title">Legal</h3>
+<ul class="footer-links">
+<li><a href="#" class="footer-link">Privacy Policy</a></li>
+<li><a href="#" class="footer-link">Terms of Service</a></li>
+</ul>
+</div>
+</div>
+<div class="footer-bottom">
+<p class="footer-text">© 2025 Apify Playlist AI. All rights reserved.</p>
+<a href="mailto:contact@apifyplaylist.com" class="footer-link">
+<svg class="icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+</svg>
+contact@apifyplaylist.com
+</a>
+</div>
+</div>
+</footer>
+<div id="configModal" class="modal">
+<div class="modal-content">
+<div class="modal-header">
+<h2 class="modal-title">Spotify Configuration</h2>
+<button onclick="closeConfigModal()" class="modal-close">&times;</button>
+</div>
+<form onsubmit="saveConfig(event)">
+<div class="form-group">
+<label class="form-label">Spotify Client ID</label>
+<input type="text" id="clientId" class="form-input" placeholder="Your Spotify Client ID" required>
+<p class="form-help">Get it from <a href="https://developer.spotify.com/dashboard" target="_blank" class="form-link">Spotify Developer Dashboard</a></p>
+</div>
+<div class="form-group">
+<label class="form-label">Spotify Client Secret</label>
+<input type="password" id="clientSecret" class="form-input" placeholder="Your Spotify Client Secret" required>
+<p class="form-help">Found in your Spotify App settings</p>
+</div>
+<div class="form-group">
+<label class="form-label">Refresh Token</label>
+<input type="text" id="refreshToken" class="form-input" placeholder="Your Spotify Refresh Token" required>
+<p class="form-help">Generate using <a href="https://developer.spotify.com/console/post-playlists/" target="_blank" class="form-link">Spotify Console</a></p>
+</div>
+<button type="submit" class="btn btn-primary" style="width:100%">
+<svg class="icon-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+<path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+</svg>
+Save Configuration
+</button>
+</form>
+</div>
+</div>
+<script>
+function openConfigModal(){document.getElementById("configModal").classList.add("active");const e=localStorage.getItem("spotifyConfig");if(e){const t=JSON.parse(e);document.getElementById("clientId").value=t.clientId||"",document.getElementById("clientSecret").value=t.clientSecret||"",document.getElementById("refreshToken").value=t.refreshToken||""}}function closeConfigModal(){document.getElementById("configModal").classList.remove("active")}function saveConfig(e){e.preventDefault();const t={clientId:document.getElementById("clientId").value,clientSecret:document.getElementById("clientSecret").value,refreshToken:document.getElementById("refreshToken").value};localStorage.setItem("spotifyConfig",JSON.stringify(t)),alert("Configuration saved successfully!"),closeConfigModal()}document.getElementById("configModal").addEventListener("click",(e=>{e.target===document.getElementById("configModal")&&closeConfigModal()})),document.querySelectorAll('a[href^="#"]').forEach((e=>{e.addEventListener("click",(t=>{t.preventDefault();const o=document.querySelector(e.getAttribute("href"));o&&o.scrollIntoView({behavior:"smooth"})}))}));const navBtns=document.querySelectorAll(".nav-btn");function updateActiveNav(){const e=document.querySelectorAll("section[id]");let t="home";e.forEach((e=>{const o=e.offsetTop-100;window.scrollY>=o&&(t=e.getAttribute("id"))})),navBtns.forEach((e=>{e.classList.remove("active"),e.getAttribute("href")==="#"+t&&e.classList.add("active")}))}window.addEventListener("scroll",updateActiveNav);
+</script>
+</body>
 </html>
