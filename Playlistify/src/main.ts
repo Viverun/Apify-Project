@@ -32,12 +32,6 @@ await Actor.init();
 // Charge for Actor start
 await Actor.charge({ eventName: 'actor-start' });
 
-if (!STANDBY_MODE) {
-    // If the Actor is not in standby mode, we should not run the MCP server
-    const msg = 'This Actor is not meant to be run directly. It should be run in standby mode.';
-    log.error(msg);
-    await Actor.exit({ statusMessage: msg });
-}
 
 await startServer({
     serverPort: SERVER_PORT,
