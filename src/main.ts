@@ -329,6 +329,114 @@ async function start(): Promise<void> {
     }
   });
 
+  // REST API endpoint for frontend
+  app.post("/api/generate-playlist", async (req: Request, res: Response) => {
+    const startTime = Date.now();
+    
+    // Enable CORS for frontend
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Spotify-Client-Id, X-Spotify-Client-Secret, X-Spotify-Refresh-Token');
+
+    if (req.method === 'OPTIONS') {
+      return res.status(200).end();
+    }
+
+    try {
+      const { description, genres, moods, activities, trackCount = 20 } = req.body;
+      
+      // Get credentials from headers
+      const clientId = req.headers['x-spotify-client-id'] as string;
+      const clientSecret = req.headers['x-spotify-client-secret'] as string;
+      const refreshToken = req.headers['x-spotify-refresh-token'] as string;
+
+      if (!clientId || !clientSecret || !refreshToken) {
+        return res.status(400).json({
+          success: false,
+          error: 'Missing Spotify credentials in headers'
+        });
+      }
+
+      // Temporarily set credentials for this request
+      const originalClientId = process.env.SPOTIFY_CLIENT_ID;
+      const originalClientSecret = process.env.SPOTIFY_CLIENT_SECRET;
+      const originalRefreshToken = process.env.SPOTIFY_REFRESH_TOKEN;
+
+      process.env.SPOTIFY_CLIENT_ID = clientId;
+      process.env.SPOTIFY_CLIENT_SECRET = clientSecret;
+      process.env.SPOTIFY_REFRESH_TOKEN = refreshToken;
+
+      try {
+        // Build seed genres
+        let seedGenres = genres || [];
+        
+        // Enhance with NLP if enabled and description provided
+        if (ENABLE_NLP && description) {
+          const intent = parsePlaylistIntent(description);
+          if (intent.suggestedSeeds?.genres) {
+            seedGenres = [...seedGenres, ...intent.suggestedSeeds.genres];
+          }
+        }
+
+        // Limit to 5 genres (Spotify API limit)
+        seedGenres = seedGenres.slice(0, 5);
+
+        // If no genres, use defaults
+        if (seedGenres.length === 0) {
+          seedGenres = ['pop', 'rock', 'indie'];
+        }
+
+        log.info('Generating playlist', { seedGenres, trackCount, moods, activities });
+
+        // Get recommendations
+        const result = await spotifyHandler.getRecommendations(
+          undefined, // seedArtists
+          seedGenres,
+          undefined, // seedTracks
+          Math.min(trackCount, 100)
+        );
+
+        if (result.status === 'success' && result.data?.tracks) {
+          const processingTime = Date.now() - startTime;
+          return res.json({
+            success: true,
+            tracks: result.data.tracks,
+            count: result.data.tracks.length,
+            processingTimeMs: processingTime
+          });
+        } else {
+          throw new Error(result.message || 'Failed to get recommendations');
+        }
+      } finally {
+        // Restore original credentials
+        if (originalClientId) process.env.SPOTIFY_CLIENT_ID = originalClientId;
+        if (originalClientSecret) process.env.SPOTIFY_CLIENT_SECRET = originalClientSecret;
+        if (originalRefreshToken) process.env.SPOTIFY_REFRESH_TOKEN = originalRefreshToken;
+      }
+    } catch (error: any) {
+      const processingTime = Date.now() - startTime;
+      log.error('Error generating playlist', {
+        error: error?.message || error,
+        stack: error?.stack,
+        processingTime
+      });
+
+      return res.status(500).json({
+        success: false,
+        error: error?.message || 'Internal server error',
+        processingTimeMs: processingTime
+      });
+    }
+  });
+
+  // Handle CORS preflight
+  app.options("/api/generate-playlist", (req: Request, res: Response) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Spotify-Client-Id, X-Spotify-Client-Secret, X-Spotify-Refresh-Token');
+    res.status(200).end();
+  });
+
   // 404 handler
   app.use((_req: Request, res: Response) => {
     res.status(404).json({
