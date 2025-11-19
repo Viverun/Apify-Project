@@ -58,6 +58,9 @@ async function start(): Promise<void> {
     port?: number;
   }>();
 
+
+
+
   // In Standby mode, Apify sets environment variables directly from task input
   // Prefer environment variables if they exist, otherwise use input
   const clientId = process.env.SPOTIFY_CLIENT_ID || input?.spotifyClientId;

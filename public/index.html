@@ -6,671 +6,148 @@
   <title>Playlistify AI - Smart Playlist Generator</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --background: hsl(0, 0%, 9%);
-      --foreground: hsl(0, 0%, 98%);
-      --card: hsl(0, 0%, 12%);
-      --primary: hsl(141, 73%, 42%);
-      --secondary: hsl(0, 0%, 18%);
-      --muted: hsl(0, 0%, 65%);
-      --border: hsl(0, 0%, 20%);
-      --input: hsl(0, 0%, 18%);
-    }
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: var(--background);
-      color: var(--foreground);
-      min-height: 100vh;
-      position: relative;
-      overflow-x: hidden;
-    }
-
-    /* Animated Background */
-    .animated-gradient-bg {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
-      overflow: hidden;
-      pointer-events: none;
-    }
-
-    .gradient-blob {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(100px);
-      opacity: 0.5;
-      animation: float 20s ease-in-out infinite;
-    }
-
-    .gradient-blob:nth-child(1) {
-      width: 500px;
-      height: 500px;
-      top: -100px;
-      left: -100px;
-      background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
-    }
-
-    .gradient-blob:nth-child(2) {
-      width: 400px;
-      height: 400px;
-      top: -50px;
-      right: -50px;
-      background: radial-gradient(circle, hsl(141, 50%, 50%) 0%, transparent 70%);
-      animation-delay: 3s;
-    }
-
-    .gradient-blob:nth-child(3) {
-      width: 600px;
-      height: 600px;
-      bottom: -150px;
-      left: 20%;
-      background: radial-gradient(circle, hsl(141, 60%, 35%) 0%, transparent 70%);
-      animation-delay: 7s;
-    }
-
-    @keyframes float {
-      0%, 100% {
-        transform: translate(0, 0) scale(1);
-      }
-      33% {
-        transform: translate(30px, -30px) scale(1.1);
-      }
-      66% {
-        transform: translate(-20px, 20px) scale(0.9);
-      }
-    }
-
-    /* Navigation */
-    nav {
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      background: rgba(var(--card), 0.8);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
-    }
-
-    .nav-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 1rem 1.5rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--foreground);
-    }
-
-    .logo svg {
-      width: 32px;
-      height: 32px;
-      fill: var(--primary);
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 1rem;
-      align-items: center;
-    }
-
-    #userDisplay {
-      display: none;
-      align-items: center;
-      gap: 0.5rem;
-      color: var(--muted);
-    }
-
-    /* Hero Section */
-    main {
-      position: relative;
-      z-index: 1;
-      min-height: 80vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 2rem 1.5rem;
-    }
-
-    .hero {
-      text-align: center;
-      animation: fadeIn 0.8s ease-out;
-    }
-
-    .hero h1 {
-      font-size: clamp(2.5rem, 8vw, 5rem);
-      font-weight: 700;
-      margin-bottom: 1.5rem;
-      line-height: 1.1;
-    }
-
-    .text-primary {
-      color: var(--primary);
-    }
-
-    .hero-desc {
-      font-size: clamp(1.1rem, 2.5vw, 1.5rem);
-      color: var(--muted);
-      max-width: 600px;
-      margin: 0 auto 2.5rem;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    /* Buttons */
-    .btn-primary {
-      background: var(--primary);
-      color: white;
-      border: none;
-      padding: 1rem 2.5rem;
-      border-radius: 50px;
-      font-size: 1.125rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 20px rgba(29, 185, 84, 0.3);
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 30px rgba(29, 185, 84, 0.4);
-    }
-
-    .btn-outline {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--foreground);
-      padding: 0.75rem 1.5rem;
-      border-radius: 50px;
-      font-size: 1rem;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .btn-outline:hover {
-      background: var(--secondary);
-    }
-
-    .btn-small {
-      padding: 0.5rem 1rem;
-      font-size: 0.875rem;
-    }
-
-    /* Modal Styles */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.85);
-      z-index: 100;
-      align-items: center;
-      justify-content: center;
-      padding: 1rem;
-      animation: fadeIn 0.3s ease-out;
-    }
-
-    .modal.show {
-      display: flex;
-    }
-
-    .modal-content {
-      background: var(--card);
-      border-radius: 1rem;
-      padding: 2rem;
-      max-width: 500px;
-      width: 100%;
-      max-height: 90vh;
-      overflow-y: auto;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-    }
-
-    .modal-content.large {
-      max-width: 600px;
-    }
-
-    .modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 1.5rem;
-    }
-
-    .modal-header h2 {
-      font-size: 1.5rem;
-      font-weight: 600;
-    }
-
-    .close-btn {
-      background: none;
-      border: none;
-      color: var(--muted);
-      font-size: 1.5rem;
-      cursor: pointer;
-      padding: 0;
-      width: 32px;
-      height: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: color 0.2s;
-    }
-
-    .close-btn:hover {
-      color: var(--foreground);
-    }
-
-    /* Form Styles */
-    .form-group {
-      margin-bottom: 1.5rem;
-    }
-
-    .form-group label {
-      display: block;
-      font-weight: 500;
-      margin-bottom: 0.5rem;
-      color: var(--foreground);
-    }
-
-    .form-group input,
-    .form-group textarea {
-      width: 100%;
-      padding: 0.75rem 1rem;
-      background: var(--input);
-      border: 1px solid var(--border);
-      border-radius: 0.5rem;
-      color: var(--foreground);
-      font-family: 'Inter', sans-serif;
-      font-size: 1rem;
-      transition: all 0.2s;
-    }
-
-    .form-group input:focus,
-    .form-group textarea:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(29, 185, 84, 0.1);
-    }
-
-    .form-group textarea {
-      resize: vertical;
-      min-height: 100px;
-    }
-
-    .form-help {
-      font-size: 0.875rem;
-      color: var(--muted);
-      margin-top: 0.25rem;
-    }
-
-    .form-help a {
-      color: var(--primary);
-      text-decoration: none;
-    }
-
-    .form-help a:hover {
-      text-decoration: underline;
-    }
-
-    .form-link {
-      text-align: center;
-      margin-top: 1rem;
-      color: var(--muted);
-    }
-
-    .form-link a {
-      color: var(--primary);
-      text-decoration: none;
-    }
-
-    .form-link a:hover {
-      text-decoration: underline;
-    }
-
-    /* Loading Spinner */
-    .loading-spinner {
-      display: inline-block;
-      width: 16px;
-      height: 16px;
-      border: 2px solid rgba(255, 255, 255, 0.3);
-      border-top-color: white;
-      border-radius: 50%;
-      animation: spin 0.6s linear infinite;
-    }
-
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    .loading-spinner.hidden {
-      display: none;
-    }
-
-    /* Result Display */
-    #result {
-      display: none;
-      margin-top: 1.5rem;
-      padding: 1.5rem;
-      background: var(--secondary);
-      border-radius: 0.5rem;
-      border-left: 4px solid var(--primary);
-    }
-
-    #result.show {
-      display: block;
-    }
-
-    .playlist-result {
-      margin-top: 1rem;
-    }
-
-    .playlist-result h3 {
-      color: var(--primary);
-      margin-bottom: 0.5rem;
-    }
-
-    .playlist-result a {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: var(--primary);
-      text-decoration: none;
-      margin-top: 0.5rem;
-    }
-
-    .playlist-result a:hover {
-      text-decoration: underline;
-    }
-
-    .error-msg {
-      color: #ff4444;
-    }
-
-    /* Footer */
-    footer {
-      position: relative;
-      z-index: 1;
-      text-align: center;
-      padding: 2rem 1.5rem;
-      border-top: 1px solid var(--border);
-      background: var(--card);
-      color: var(--muted);
-    }
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="animated-gradient-bg">
-    <div class="gradient-blob"></div>
-    <div class="gradient-blob"></div>
-    <div class="gradient-blob"></div>
+  <!-- Animated Background -->
+  <div class="animated-bg">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
   </div>
 
   <nav>
-    <div class="nav-container">
-      <div class="logo">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
-        </svg>
-        <span>Playlistify AI</span>
-      </div>
-      <div class="nav-links">
-        <div id="userDisplay">
-          <span id="userName"></span>
-        </div>
-        <button class="btn-outline btn-small" id="loginBtn" onclick="showLogin()">Login</button>
-        <button class="btn-outline btn-small" id="logoutBtn" onclick="logout()" style="display:none;">Logout</button>
-      </div>
+    <div class="logo">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+      </svg>
+      <span>Playlistify AI</span>
+    </div>
+    <div class="user-profile" id="userProfile">
+      <button class="btn-ghost" id="loginBtn" onclick="handleLogin()">Login</button>
     </div>
   </nav>
 
   <main>
-    <div class="hero">
-      <h1>
-        AI-Powered<br>
-        <span class="text-primary">Playlist Generator</span>
-      </h1>
-      <p class="hero-desc">
-        Describe your mood, activity, or vibe in plain words and let AI create the perfect Spotify playlist for you.
-      </p>
-      <button class="btn-primary" onclick="showConfigModal()">
+    <h1 class="text-gradient">Your AI Music Curator</h1>
+    <p class="subtitle">Describe your mood, activity, or vibe, and let AI craft the perfect Spotify playlist for you instantly.</p>
+
+    <div class="input-container">
+      <input type="text" class="hero-input" id="promptInput" placeholder="Describe your vibe... e.g., 'Late night coding in Tokyo'" autocomplete="off">
+      <button class="send-btn" id="generateBtn" onclick="generatePlaylist()">
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M9 18V5l12-2v13"></path>
-          <circle cx="6" cy="18" r="3"></circle>
-          <circle cx="18" cy="16" r="3"></circle>
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
         </svg>
-        Create Playlist
       </button>
+    </div>
+
+    <div class="chips-container" id="chips">
+      <div class="chip" onclick="useChip('💪 High energy workout')">💪 High energy workout</div>
+      <div class="chip" onclick="useChip('🌧️ Melancholy rainy day')">🌧️ Melancholy rainy day</div>
+      <div class="chip" onclick="useChip('🚗 Late night drive')">🚗 Late night drive</div>
+      <div class="chip" onclick="useChip('🎉 House party vibes')">🎉 House party vibes</div>
+    </div>
+
+    <div id="loadingState" class="loading-state hidden">
+      <div class="spinner"></div>
+      <div class="loading-text" id="loadingText">Analyzing your vibe...</div>
+    </div>
+
+    <div id="resultContainer" class="result-container hidden">
+      <!-- Result will be injected here -->
     </div>
   </main>
 
-  <!-- Login Modal -->
-  <div id="loginModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>Login</h2>
-        <button class="close-btn" onclick="closeModal('loginModal')">&times;</button>
-      </div>
-      <form id="loginForm" onsubmit="handleLogin(event)">
-        <div class="form-group">
-          <label for="loginEmail">Email</label>
-          <input type="email" id="loginEmail" placeholder="your@email.com" required>
-        </div>
-        <div class="form-group">
-          <label for="loginPassword">Password</label>
-          <input type="password" id="loginPassword" placeholder="Password" required>
-        </div>
-        <button type="submit" class="btn-primary" style="width:100%;">Login</button>
-        <div class="form-link">
-          Don't have an account? <a href="#" onclick="closeModal('loginModal'); showSignup(); return false;">Sign up</a>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Signup Modal -->
-  <div id="signupModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>Sign Up</h2>
-        <button class="close-btn" onclick="closeModal('signupModal')">&times;</button>
-      </div>
-      <form id="signupForm" onsubmit="handleSignup(event)">
-        <div class="form-group">
-          <label for="signupName">Full Name</label>
-          <input type="text" id="signupName" placeholder="John Doe" required>
-        </div>
-        <div class="form-group">
-          <label for="signupEmail">Email</label>
-          <input type="email" id="signupEmail" placeholder="your@email.com" required>
-        </div>
-        <div class="form-group">
-          <label for="signupPassword">Password</label>
-          <input type="password" id="signupPassword" placeholder="Password (min 6 chars)" minlength="6" required>
-        </div>
-        <button type="submit" class="btn-primary" style="width:100%;">Create Account</button>
-        <div class="form-link">
-          Already have an account? <a href="#" onclick="closeModal('signupModal'); showLogin(); return false;">Login</a>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Configuration Modal -->
-  <div id="configModal" class="modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2>Create Playlist</h2>
-        <button class="close-btn" onclick="closeModal('configModal')">&times;</button>
-      </div>
-      <form id="configForm" onsubmit="createPlaylist(event)">
-        <div class="form-group">
-          <label for="playlistDescription">Describe Your Playlist</label>
-          <textarea id="playlistDescription" placeholder="e.g., Energetic workout mix with rock and electronic music" required></textarea>
-          <div class="form-help">Tell us what kind of music you want</div>
-        </div>
-        
-        <div class="form-group">
-          <label for="playlistName">Playlist Name</label>
-          <input type="text" id="playlistName" placeholder="My Awesome Playlist" required>
-        </div>
-        
-        <div class="form-group">
-          <label for="trackCount">Number of Tracks</label>
-          <input type="number" id="trackCount" value="20" min="5" max="100" required>
-        </div>
-        
-        <button type="submit" class="btn-primary" id="createBtn" style="width:100%;">
-          <span class="loading-spinner hidden" id="loadingSpinner"></span>
-          <span id="btnText">Create Playlist</span>
-        </button>
-        
-        <div id="result"></div>
-      </form>
-    </div>
-  </div>
-
   <footer>
-    <p>&copy; 2025 Playlistify AI | Powered by Apify Actors</p>
+    <p>&copy; 2025 Playlistify AI • Powered by Apify & Spotify</p>
   </footer>
 
   <script>
-    const API_BASE = window.location.origin;
+    // Simple state management
+    const state = {
+      user: JSON.parse(localStorage.getItem('user') || 'null'),
+      isGenerating: false
+    };
 
-    // Check login status on load
-    checkLoginStatus();
+    // Initialize
+    function init() {
+      updateAuthUI();
+      
+      // Input enter key listener
+      document.getElementById('promptInput').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') generatePlaylist();
+      });
+    }
 
-    function checkLoginStatus() {
-      const user = JSON.parse(localStorage.getItem('user') || 'null');
-      if (user) {
-        document.getElementById('loginBtn').style.display = 'none';
-        document.getElementById('logoutBtn').style.display = 'block';
-        document.getElementById('userDisplay').style.display = 'flex';
-        document.getElementById('userName').textContent = user.name;
+    function updateAuthUI() {
+      const profile = document.getElementById('userProfile');
+      if (state.user) {
+        profile.innerHTML = `
+          <span style="font-size: 0.9rem; color: var(--secondary);">Hi, ${state.user.name}</span>
+          <button class="btn-ghost" onclick="handleLogout()">Logout</button>
+        `;
+      } else {
+        profile.innerHTML = `<button class="btn-ghost" onclick="handleLogin()">Login</button>`;
       }
     }
 
-    function showLogin() {
-      document.getElementById('loginModal').classList.add('show');
+    function handleLogin() {
+      // Mock login
+      const email = prompt("Enter your email to login:");
+      if (email) {
+        state.user = { name: email.split('@')[0], email };
+        localStorage.setItem('user', JSON.stringify(state.user));
+        updateAuthUI();
+      }
     }
 
-    function showSignup() {
-      document.getElementById('signupModal').classList.add('show');
-    }
-
-    function showConfigModal() {
-      document.getElementById('configModal').classList.add('show');
-    }
-
-    function closeModal(modalId) {
-      document.getElementById(modalId).classList.remove('show');
-    }
-
-    function closeAllModals() {
-      document.querySelectorAll('.modal').forEach(m => m.classList.remove('show'));
-    }
-
-    // Close modal when clicking outside
-    document.querySelectorAll('.modal').forEach(modal => {
-      modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
-          modal.classList.remove('show');
-        }
-      });
-    });
-
-    function handleLogin(e) {
-      e.preventDefault();
-      const email = document.getElementById('loginEmail').value;
-      const password = document.getElementById('loginPassword').value;
-      
-      // Mock login - In production, validate against backend
-      const user = { name: email.split('@')[0], email };
-      localStorage.setItem('user', JSON.stringify(user));
-      
-      closeModal('loginModal');
-      checkLoginStatus();
-    }
-
-    function handleSignup(e) {
-      e.preventDefault();
-      const name = document.getElementById('signupName').value;
-      const email = document.getElementById('signupEmail').value;
-      const password = document.getElementById('signupPassword').value;
-      
-      // Mock signup - In production, send to backend
-      const user = { name, email };
-      localStorage.setItem('user', JSON.stringify(user));
-      
-      closeModal('signupModal');
-      checkLoginStatus();
-    }
-
-    function logout() {
+    function handleLogout() {
       localStorage.removeItem('user');
-      document.getElementById('loginBtn').style.display = 'block';
-      document.getElementById('logoutBtn').style.display = 'none';
-      document.getElementById('userDisplay').style.display = 'none';
+      state.user = null;
+      updateAuthUI();
     }
 
-    async function createPlaylist(e) {
-      e.preventDefault();
+    function useChip(text) {
+      const input = document.getElementById('promptInput');
+      input.value = text;
+      input.focus();
+      generatePlaylist();
+    }
+
+    async function generatePlaylist() {
+      if (state.isGenerating) return;
       
-      const btn = document.getElementById('createBtn');
-      const spinner = document.getElementById('loadingSpinner');
-      const btnText = document.getElementById('btnText');
-      const result = document.getElementById('result');
+      const input = document.getElementById('promptInput');
+      const promptText = input.value.trim();
       
-      // Show loading
-      btn.disabled = true;
-      spinner.classList.remove('hidden');
-      btnText.textContent = 'Creating...';
-      result.classList.remove('show');
+      if (!promptText) return;
+
+      // UI Updates
+      state.isGenerating = true;
+      document.getElementById('generateBtn').disabled = true;
+      document.getElementById('chips').classList.add('hidden');
+      document.getElementById('resultContainer').classList.add('hidden');
+      document.getElementById('loadingState').classList.remove('hidden');
       
-      const description = document.getElementById('playlistDescription').value;
-      const name = document.getElementById('playlistName').value;
-      const limit = parseInt(document.getElementById('trackCount').value);
+      const loadingText = document.getElementById('loadingText');
+      const steps = ["Analyzing your vibe...", "Searching Spotify catalog...", "Curating tracks...", "Finalizing playlist..."];
+      let stepIndex = 0;
       
+      const stepInterval = setInterval(() => {
+        stepIndex = (stepIndex + 1) % steps.length;
+        loadingText.textContent = steps[stepIndex];
+      }, 1500);
+
       try {
-        // Step 1: Search tracks
+        // 1. Search Tracks
         const searchRes = await fetch('/mcp', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             tool: 'search-track',
-            input: { query: description, limit }
+            input: { query: promptText, limit: 20 }
           })
         });
         
@@ -678,9 +155,9 @@
         if (searchData.status === 'error') throw new Error(searchData.message);
         
         const tracks = searchData.data.tracks;
-        if (!tracks || tracks.length === 0) throw new Error('No tracks found');
-        
-        // Step 2: Create playlist
+        if (!tracks || tracks.length === 0) throw new Error('No tracks found for this vibe.');
+
+        // 2. Create Playlist
         const trackUris = tracks.map(t => t.uri);
         const createRes = await fetch('/mcp', {
           method: 'POST',
@@ -688,52 +165,71 @@
           body: JSON.stringify({
             tool: 'create-playlist',
             input: {
-              name,
-              description: `Created by Playlistify AI: ${description}`,
-              trackUris,
+              name: `Playlistify: ${promptText}`,
+              description: `AI-curated playlist for: ${promptText}`,
+              trackUris: trackUris,
               isPublic: true
             }
           })
         });
-        
+
         const createData = await createRes.json();
         if (createData.status === 'error') throw new Error(createData.message);
-        
-        displayResult(createData.data.playlist);
-      } catch (error) {
-        showError(error.message);
+
+        // Show Result
+        showResult(createData.data.playlist, tracks.slice(0, 5));
+
+      } catch (err) {
+        alert(`Error: ${err.message}`);
       } finally {
-        btn.disabled = false;
-        spinner.classList.add('hidden');
-        btnText.textContent = 'Create Playlist';
+        clearInterval(stepInterval);
+        state.isGenerating = false;
+        document.getElementById('generateBtn').disabled = false;
+        document.getElementById('loadingState').classList.add('hidden');
       }
     }
 
-    function displayResult(playlist) {
-      const result = document.getElementById('result');
-      result.innerHTML = `
-        <div class="playlist-result">
-          <h3>✨ Playlist Created!</h3>
-          <p><strong>${playlist.name}</strong></p>
-          <p>${playlist.trackCount} tracks added to your Spotify account</p>
-          ${playlist.external_urls?.spotify ? `
-            <a href="${playlist.external_urls.spotify}" target="_blank">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+    function showResult(playlist, previewTracks) {
+      const container = document.getElementById('resultContainer');
+      
+      const trackListHtml = previewTracks.map(t => `
+        <div class="track-item">
+          <span class="track-name">${t.name}</span>
+          <span class="track-artist">${t.artists[0].name}</span>
+        </div>
+      `).join('');
+
+      container.innerHTML = `
+        <div class="playlist-card">
+          <div class="card-header">
+            <div class="cover-art">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
               </svg>
-              Open in Spotify
-            </a>
-          ` : ''}
+            </div>
+            <div class="playlist-info">
+              <h2>${playlist.name}</h2>
+              <p>${playlist.trackCount} tracks • Curated by AI</p>
+            </div>
+          </div>
+          
+          <div class="track-list">
+            ${trackListHtml}
+          </div>
+
+          <a href="${playlist.external_urls.spotify}" target="_blank" class="btn-spotify">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+            </svg>
+            Open in Spotify
+          </a>
         </div>
       `;
-      result.classList.add('show');
+      
+      container.classList.remove('hidden');
     }
 
-    function showError(message) {
-      const result = document.getElementById('result');
-      result.innerHTML = `<p class="error-msg">❌ Error: ${message}</p>`;
-      result.classList.add('show');
-    }
+    init();
   </script>
 </body>
 </html>
